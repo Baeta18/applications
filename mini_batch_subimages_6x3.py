@@ -1517,8 +1517,8 @@ def main():
 			print("Using validation")
 			print("Loading validation images")
 	        	validationData,validationMask = loadImages(dataPath,validationInstances, cropSize,1)
-			validationClassDistributionFile = "output/classDistribution/classe_" + validations + ".npy"
-			validationPurityFile = "output/classDistribution/purity_" + validations + ".npy"
+			validationClassDistributionFile = outputPath + "/classDistribution/classe_" + validations + ".npy"
+			validationPurityFile = outputPath + "/classDistribution/purity_" + validations + ".npy"
 
 		        if os.path.exists(validationClassDistributionFile) != True:
 		        	validationClasses,validationPurity = createDistributionsOverClasses(validationMask, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=True)
@@ -1535,8 +1535,8 @@ def main():
 			validationMask = []
 			classesValidation = []
 
-		mean_file = "output/mean_std/" + str(instance) + "_mean_full.npy"
-		std_file = "output/mean_std/" + str(instance) + "_std_full.npy"	
+		mean_file = outputPath + "/mean_std/" + str(instance) + "_mean_full.npy"
+		std_file = outputPath + "/mean_std/" + str(instance) + "_std_full.npy"	
 
 	        if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
 	        	trainData,trainMask,means,stds = loadImages(dataPath,trainInstances, cropSize,0)
@@ -1557,8 +1557,8 @@ def main():
 			mean_full = np.load(mean_file)
 			std_full = np.load(std_file)
 			
-		classDistributionFile = "output/classDistribution/classe_" + trainings + ".npy"
-		purityFile = "output/classDistribution/purity_" + trainings + ".npy"
+		classDistributionFile = outputPath + "/classDistribution/classe_" + trainings + ".npy"
+		purityFile = outputPath + "/classDistribution/purity_" + trainings + ".npy"
 				
 	        if os.path.exists(classDistributionFile) != True or os.path.exists(purityFile) != True:
 	        	classes,purity = createDistributionsOverClasses(trainMask, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=True)
