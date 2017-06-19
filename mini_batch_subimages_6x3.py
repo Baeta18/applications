@@ -838,7 +838,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 	trainings = ""	
 	trainings = trainInstances[0]
 	for i in xrange(1,len(trainInstances)):
-		trainings = trainings + trainInstances[i]
+		trainings = trainings + "-" + trainInstances[i]
 	
 	resultPath = resultPath + trainings
 	
