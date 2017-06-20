@@ -28,6 +28,8 @@ from matplotlib.mlab import PCA as mlabPCA
 from matplotlib import pyplot as plt
 NUM_CLASSES = 2
 TEST_STR = ""
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45)
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -899,9 +901,9 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 		saver_restore = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft_')])
 
 
-	
 
-	with tf.Session() as sess:
+
+	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
 		if countIter == 0:
 			sess.run(init)
@@ -967,7 +969,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 					indsMinorityClass = minorityShuffle[step1*sizeClasse1:min(step1*sizeClasse1+sizeClasse1, len(minorityShuffle))]
 					
 					if(len(indsMinorityClass) == 0):
-						step1 = 0
+						step1 = 0sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 						indsMinorityClass = minorityShuffle[step1*sizeClasse1:min(step1*sizeClasse1+sizeClasse1, len(minorityShuffle))]
 
 					step1 += 1
@@ -1349,7 +1351,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	
 	print("Model location " + outputPath + model_path)
 
-	with tf.Session() as sess:
+	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
          	saver.restore(sess, outputPath+model_path)
 
