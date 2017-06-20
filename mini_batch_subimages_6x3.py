@@ -1335,14 +1335,9 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
                 os.makedirs(resultPath)
 
 
-	'''
-        for name in testInstances:
-                path = path + "_" + name
-
-        if os.path.exists(outputPath + path) != True:
-                os.makedirs(outputPath + path)
-        
-        result = open(outputPath + path + "/result_" + str(cropSize) + ".txt","w")
+	resultFile = resultPath + "/test-result.txt"
+       	result = open(resultFile,"w") 
+	
 
 	start_time = time.time()
 	######################################## Network Parameters
@@ -1374,8 +1369,15 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	# Initializing the variables || Add ops to save and restore all the variables.
 	saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 	
-	print("Model location " + outputPath + model_path)
+	if isFullTraining == False:
+		if countIter > 0:
+			model_path = model_path +'_iteration_'+str(countIter)
+	elif isFullTraining == True:
+		model_path = model_path +'_final'
+	
+	print("Model location " + model_path)
 
+	'''
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
          	saver.restore(sess, outputPath+model_path)
