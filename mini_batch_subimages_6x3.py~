@@ -1401,7 +1401,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	print("Map location " + predictionPath)
 	print("Probability location " + probabilityPath)
 
-	'''
+	
 	result = open(resultFile,"w") 
 	
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
@@ -1481,7 +1481,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 
 	tf.reset_default_graph()
         result.close()
-	'''
+	
 
 	
 '''
