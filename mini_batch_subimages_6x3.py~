@@ -1030,20 +1030,19 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 				validation(sess,countIter,resultFile,validationData,validationMask,mean_full,std_full,classesValidation,batch,cropSize,pred,acc_mean,soft,x,y,keep_prob,is_training,batch_loss,loss)
 				drawGraphic(resultFile,graphicFile)
 
-
-		print("Optimization Finished!")
-
-		if isFullTraining == False:
-			if countIter > 0:
-				print("Saving model: " + outputPath+path+'_iteration_'+str(countIter))
-				saver.save(sess, outputPath+path+'_iteration_'+str(countIter))
-			else: 
+			if i > 0 and i < epochs-1:
+				print("Saving model: " + outputPath+path+'_iteration_'+str(i))
+				saver.save(sess, outputPath+path+'_iteration_'+str(i))
+			elif i == 0: 
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
+			else:
+				print("Saving model: " + outputPath+path+'_final')
+				saver.save(sess, outputPath+path + '_final')
 
-		elif isFullTraining == True:
-			print("Saving model: " + outputPath+path+'_final')
-			saver.save(sess, outputPath+path + '_final')
+
+	print("Optimization Finished!")
+
 			
                 
 	tf.reset_default_graph()        
