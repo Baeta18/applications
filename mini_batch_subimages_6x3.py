@@ -1300,17 +1300,30 @@ def validation(sess,countIter,resultFile,validationData,validationMask,mean_full
 	'''
 		
 
-def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full, isFullTraining=False, isDataAugmentation=False):
+def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full,useMinibatch, isFullTraining=False, isDataAugmentation=False):
 
- 
 
-        model_path = "models/" + str(instance) + "_model_6x3_" + str(cropSize) + "_"
+	trainings = ""	
+
+        model_path = "models/" + str(instance) + "_model_6x3_" + str(cropSize) 
 
         for name in trainInstances:
                 model_path = model_path + "_" + name
 
-	path = "maps/" + str(instance) + "_maps_6x3_" + str(cropSize)
+	if useMinibatch == 1:
+		model_path = model_path + "_minibatch"
 
+	print("Model path: " + path)
+	print("Number of images used to test: " + str(len(testInstances)))
+	print("Iteration: " + str(countIter))
+
+	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(cropSize) + "/test/"
+	resultPath = dataPath + resultPath
+	if os.path.exists(resultPath) != True:
+		print("Creating folder: " + resultPath)
+                os.makedirs(resultPath)
+
+	'''
         for name in testInstances:
                 path = path + "_" + name
 
@@ -1428,7 +1441,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 
 	tf.reset_default_graph()
         result.close()
-	
+	'''
 
 	
 '''
@@ -1578,9 +1591,9 @@ def main():
 		mean_full = np.load(mean_file)
 		std_full = np.load(std_file)
 		
-	#print("FULL TEST...")
-	#test(instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full, isFullTraining=False)
-	#print("...Done!")
+	print("FULL TEST...")
+	test(instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch, isFullTraining=False)
+	print("...Done!")
 	
 
 if __name__ == "__main__":
