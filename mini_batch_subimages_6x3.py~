@@ -1369,10 +1369,6 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	# Initializing the variables || Add ops to save and restore all the variables.
 	saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 	
-
-
-
-
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
@@ -1380,6 +1376,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 		model_path = model_path +'_final'
 	
 	print("Model location " + model_path)
+
 	'''
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
