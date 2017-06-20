@@ -1464,12 +1464,10 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 					all_cm_test[batch_y[j]][preds_val[j]] += 1
 
 			print("Creating prediction map for cropsize " + str(cropSize) + " and instance " + str(instance))
-			predictionPath = predictionPath + "_" + testInstance + ".png"
-			createPredictionMap(predictionPath, mapImage, testInstance)
+			createPredictionMap(predictionPath + "_" + testInstance + ".png", mapImage, testInstance)
 			
 			print("Saving probability for cropsize " + str(cropSize) + " and instance " + str(instance))
-			probabilityPath = probabilityPath + "_" + testInstance + ".npy"
-			np.save(probabilityPath,probs)
+			np.save(probabilityPath + "_" + testInstance + ".npy",probs)
 		
 			_sum = 0.0
 			for z in xrange(len(cm_test)):
