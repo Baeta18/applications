@@ -1313,7 +1313,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	if useMinibatch == 1:
 		model_path = model_path + "_minibatch"
 
-	print("Model path: " + path)
+	print("Model path: " + model_path)
 	print("Number of images used to test: " + str(len(testInstances)))
 	print("Iteration: " + str(countIter))
 

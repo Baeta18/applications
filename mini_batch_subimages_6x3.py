@@ -1323,6 +1323,18 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 		print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
 
+	tests = ""	
+	tests = testInstances[0]
+	for i in xrange(1,len(testInstances)):
+		tests = tests + "-" + testInstances[i]
+	
+	resultPath = resultPath + tests
+	
+	if os.path.exists(resultPath) != True:
+		print("Creating folder: " + resultPath)
+                os.makedirs(resultPath)
+
+
 	'''
         for name in testInstances:
                 path = path + "_" + name
