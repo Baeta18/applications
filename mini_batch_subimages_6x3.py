@@ -1416,14 +1416,14 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 			purityFile = outputPath + "/classDistribution/purity_" + tests + ".npy"
 				
 			if os.path.exists(classDistributionFile) != True or os.path.exists(purityFile) != True:
-				classes,purity = createDistributionsOverClasses(testMask, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=True)
-				np.save(classDistributionFile,classes)
+				classeDistribution,purity = createDistributionsOverClasses(testMask, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=True)
+				np.save(classDistributionFile,classeDistribution)
 				np.save(purityFile,purity)
 
 			else:
 				print("Loading training class distribution and purity index")
-				classes = np.load(classDistributionFile)
-				purity = np.load(purityFile)
+				classeDistribution = np.load(classDistributionFile)
+	
 
 	                # Launch the graph
 	                all_true_count = np.zeros((len(testData)), dtype=np.uint32)

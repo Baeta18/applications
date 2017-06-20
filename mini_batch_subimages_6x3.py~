@@ -1375,14 +1375,14 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction.png"
-	probabilityPath = outputPath + "probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
+	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
 
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
 			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)+".png"
-			probabilityPath = outputPath + "probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_iteration_'+str(countIter)+ ".npy"
+			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_iteration_'+str(countIter)+ ".npy"
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
