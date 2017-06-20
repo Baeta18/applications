@@ -1321,7 +1321,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 		
 
 	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(cropSize) + "/test/"
-	resultPath = dataPath + resultPath
+	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
