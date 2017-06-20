@@ -1522,7 +1522,7 @@ def main():
 	mean_file = outputPath + "/mean_std/" + str(instance) + "_mean_full.npy"
 	td_file = outputPath + "/mean_std/" + str(instance) + "_std_full.npy"	
 
-	 if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
+	if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
 		trainData,trainMask,means,stds = loadImages(dataPath,trainInstances, cropSize,0)
 		mean_full = np.asarray([0,0,0])
 		std_full = np.asarray([0,0,0])
