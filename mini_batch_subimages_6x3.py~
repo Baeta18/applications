@@ -1387,7 +1387,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
 		predictionPath = resultPath + "/prediction-final.png"
-		probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_final.npy"
+		probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ "_final.npy"
 	
 
 	

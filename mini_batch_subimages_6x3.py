@@ -1398,7 +1398,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	
 
 	print("Model location " + model_path)
-	print("Result file location " + model_path)
+	print("Result file location " + resultFile)
 	print("Map location " + predictionPath)
 	print("Probability location " + probabilityPath)
 
