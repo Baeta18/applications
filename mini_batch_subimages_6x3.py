@@ -770,12 +770,13 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay):
 		 _,logits = convNet_ICPR_33(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 25):
 		 _,logits = convNet_ICPR_25(x, keep_prob, is_training, cropSize, weightDecay)
+	elif(cropSize == 45):
+		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 55):
 		 _,logits = convNet_ICPR_55(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 65):
 		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
-	elif(cropSize == 45):
-		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
+
 	
 	return _,logits
 
