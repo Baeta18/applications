@@ -447,14 +447,13 @@ def dynamicPredictionMap(map,prob,classDistribution,shuffle,all_predcs,softs_val
 	
 def createPredictionMap(outputPath, array, map):
 	#array = np.reshape(np.asarray(all_predcs), (1000,1000), order="C")
-        outputPath =  outputPath + '/map_6x3_' + str(map) + ".pgm"
 
-	WriteImageP2(array,outputPath)
+	#WriteImageP2(array,outputPath)
 
 	##print "array", np.bincount(array.astype(int).flatten())
 	##print "all_predcs", np.bincount(np.asarray(all_predcs).astype(int).flatten())
         #print("\n\nSave image " + outputPath + '/map_6x3_' + str(map) + '.jpeg\n\n')
-	#scipy.misc.imsave(outputPath + '/map_6x3_' + str(map) + '.jpeg', array)
+	scipy.misc.imsave(outputPath, array)
 
 	'''img = Image.new("1", (1000,1000), "black")
 
@@ -1317,6 +1316,10 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	print("Number of images used to test: " + str(len(testInstances)))
 	print("Iteration: " + str(countIter))
 
+	
+
+		
+
 	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(cropSize) + "/test/"
 	resultPath = dataPath + resultPath
 	if os.path.exists(resultPath) != True:
@@ -1330,13 +1333,14 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	
 	resultPath = resultPath + tests
 	
+
+
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
 
 
-	resultFile = resultPath + "/test-result.txt"
-       	result = open(resultFile,"w") 
+
 	
 
 	start_time = time.time()
@@ -1369,19 +1373,41 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	# Initializing the variables || Add ops to save and restore all the variables.
 	saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 	
+	resultFile = resultPath + "/test-result.txt"
+	predictionPath = resultPath + "/prediction.png"
+	probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
+
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
+			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
+			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)+".png"
+			probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_iteration_'+str(countIter)+ ".npy"
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
+		resultFile = resultPath + "/test-result"+'-final.txt"
+		predictionPath = resultPath + "/prediction-final.png"
+		probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_final.npy"
 	
+
+	
+       	
+
 	model_path = outputPath + model_path
+	resultFile = outputPath + resultFile
+	
+
 	print("Model location " + model_path)
+	print("Result file location " + model_path)
+	print("Map location " + predictionPath)
+	print("Probability location " + probabilityPath)
 
 	'''
+	result = open(resultFile,"w") 
+	
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
-         	saver.restore(sess, outputPath+model_path)
+         	saver.restore(sess, model_path)
 
 		for testInstance in testInstances:
 
@@ -1407,7 +1433,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 			probs = []
 			cm_test = np.zeros((NUM_CLASSES,NUM_CLASSES), dtype=np.uint32)
 			true_count = 0.0
-			map = np.zeros((1000,1000))
+			mapImage = np.zeros((1000,1000))
 
          	        for step in xrange(0,((len(shuffle)/batchSize)+1 if len(shuffle)%batchSize != 0 else (len(shuffle)/batchSize))):
 
@@ -1420,17 +1446,17 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 				true_count += acc_mean_val
 				all_predcs = np.concatenate((all_predcs,preds_val))
 				classes = np.concatenate((classes,batch_y))
-				dynamicPredictionMap(map,probs,classeDistribution,inds,preds_val,softs_val)
+				dynamicPredictionMap(mapImage,probs,classeDistribution,inds,preds_val,softs_val)
 
 				for j in range(len(preds_val)):
 					cm_test[batch_y[j]][preds_val[j]] += 1
 					all_cm_test[batch_y[j]][preds_val[j]] += 1
 
 			print("Creating prediction map for cropsize " + str(cropSize) + " and instance " + str(instance))
-			createPredictionMap(outputPath + path, map, testInstance)
+			createPredictionMap(predictionPath, mapImage, testInstance)
 			
 			print("Saving probability for cropsize " + str(cropSize) + " and instance " + str(instance))
-			np.save("output/probability/" + str(instance) + "_probs_" + str(cropSize) + "_" + testInstance + ".npy",probs)
+			np.save(probabilityPath,probs)
 		
 			_sum = 0.0
 			for z in xrange(len(cm_test)):
