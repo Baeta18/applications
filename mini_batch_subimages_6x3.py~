@@ -1375,7 +1375,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction.png"
-	probabilityPath = outputPath + "/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
+	probabilityPath = outputPath + "probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
 
 	if isFullTraining == False:
 		if countIter > 0:
