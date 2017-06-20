@@ -969,7 +969,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 					indsMinorityClass = minorityShuffle[step1*sizeClasse1:min(step1*sizeClasse1+sizeClasse1, len(minorityShuffle))]
 					
 					if(len(indsMinorityClass) == 0):
-						step1 = 0sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+						step1 = 0
 						indsMinorityClass = minorityShuffle[step1*sizeClasse1:min(step1*sizeClasse1+sizeClasse1, len(minorityShuffle))]
 
 					step1 += 1
