@@ -774,6 +774,8 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay):
 		 _,logits = convNet_ICPR_55(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 65):
 		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
+	elif(cropSize == 45):
+		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
 	
 	return _,logits
 
@@ -1099,6 +1101,7 @@ def extractFeatures(patches, batchSize, weightDecay, cropSize, outputPath, count
 	if np.any(np.isnan(features)):
 		print bcolors.FAIL + 'Features NAN == ' + str(np.any(np.isnan(features))) + bcolors.ENDC
 	
+
 	return features, all_logits
 
 
