@@ -1375,6 +1375,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 	
+	modelPath = dataPath + modelPath
 	print("Model location " + model_path)
 
 	'''
