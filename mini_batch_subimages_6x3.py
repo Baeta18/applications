@@ -1374,20 +1374,20 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 	
 	resultFile = resultPath + "/test-result.txt"
-	predictionPath = resultPath + "/prediction.png"
-	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ ".npy"
+	predictionPath = resultPath + "/prediction"
+	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize)
 
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
-			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)+".png"
-			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ '_iteration_'+str(countIter)+ ".npy"
+			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)
+			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + '_iteration_'+str(countIter)
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
-		predictionPath = resultPath + "/prediction-final.png"
-		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_" + tests+ "_final.npy"
+		predictionPath = resultPath + "/prediction-final"
+		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_final"
 	
 
 	
@@ -1421,7 +1421,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 				np.save(purityFile,purity)
 
 			else:
-				print("Loading training class distribution and purity index")
+				print("Loading test class")
 				classeDistribution = np.load(classDistributionFile)
 	
 
@@ -1464,9 +1464,11 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 					all_cm_test[batch_y[j]][preds_val[j]] += 1
 
 			print("Creating prediction map for cropsize " + str(cropSize) + " and instance " + str(instance))
+			predictionPath = predictionPath + "_" + testInstance + ".png"
 			createPredictionMap(predictionPath, mapImage, testInstance)
 			
 			print("Saving probability for cropsize " + str(cropSize) + " and instance " + str(instance))
+			probabilityPath = probabilityPath + "_" + testInstance + ".npy"
 			np.save(probabilityPath,probs)
 		
 			_sum = 0.0
