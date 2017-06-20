@@ -1518,6 +1518,30 @@ def main():
 	epoch_number = 5000
 	val_inteval = 5000
 	historyWindow = 10
+		
+	mean_file = outputPath + "/mean_std/" + str(instance) + "_mean_full.npy"
+	td_file = outputPath + "/mean_std/" + str(instance) + "_std_full.npy"	
+
+	 if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
+		trainData,trainMask,means,stds = loadImages(dataPath,trainInstances, cropSize,0)
+		mean_full = np.asarray([0,0,0])
+		std_full = np.asarray([0,0,0])
+	
+		for i in xrange(len(means)):
+			mean_full = mean_full + means[i]
+			std_full = std_full + stds[i]
+
+		mean_full = mean_full/len(trainInstances)
+		std_full = std_full/len(trainInstances)
+		np.save(mean_file,mean_full)
+		np.save(std_file,std_full)
+	else:
+
+		print("Loading mean and std")
+		if train_model == 1:
+	        	trainData,trainMask = loadImages(dataPath,trainInstances, cropSize,1)
+		mean_full = np.load(mean_file)
+		std_full = np.load(std_file)
 
 
 	if(train_model == 1):
@@ -1550,27 +1574,7 @@ def main():
 			validationMask = []
 			classesValidation = []
 
-		mean_file = outputPath + "/mean_std/" + str(instance) + "_mean_full.npy"
-		std_file = outputPath + "/mean_std/" + str(instance) + "_std_full.npy"	
 
-	        if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
-	        	trainData,trainMask,means,stds = loadImages(dataPath,trainInstances, cropSize,0)
-	        	mean_full = np.asarray([0,0,0])
-        		std_full = np.asarray([0,0,0])
-	
-	       	 	for i in xrange(len(means)):
-        	        	mean_full = mean_full + means[i]
-                		std_full = std_full + stds[i]
-
-       			mean_full = mean_full/len(trainInstances)
-			std_full = std_full/len(trainInstances)
-			np.save(mean_file,mean_full)
-			np.save(std_file,std_full)
-		else:
-			print("Loading mean and std")
-	        	trainData,trainMask = loadImages(dataPath,trainInstances, cropSize,1)
-			mean_full = np.load(mean_file)
-			std_full = np.load(std_file)
 			
 		classDistributionFile = outputPath + "/classDistribution/classe_" + trainings + ".npy"
 		purityFile = outputPath + "/classDistribution/purity_" + trainings + ".npy"
