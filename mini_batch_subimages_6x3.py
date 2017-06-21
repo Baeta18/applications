@@ -674,7 +674,7 @@ def convNet_ICPR_33(x, dropout, is_training, cropSize, weightDecay):
 	
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
-		weights = _varif(cropSize == 17):iable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 
 		# Apply Dropout
