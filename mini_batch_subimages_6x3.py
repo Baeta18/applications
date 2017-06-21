@@ -907,18 +907,25 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
-		if countIter == 0:
+		if countIter == 0 or keepTraining==False:
 			sess.run(init)
-		elif countIter == 1:
-			sess.run(init)
-			print('Restoring training Model from ' + outputPath+path + ' ...')
-			saver_restore.restore(sess, outputPath+path)
-			print('...Done!')
-		else:
-			sess.run(init)
-			print('Restoring training Model from ' + outputPath+path + '_iteration_' + str(countIter-1) + ' ...')
-			saver_restore.restore(sess, outputPath+ path + '_iteration_'+ str(countIter-1))
-			print('...Done!')
+		elif keepTraining==True 
+			if isFullTraining == False:
+				if countIter > 1:
+					sess.run(init)
+					print('Restoring training Model from ' + outputPath+path + '_iteration_' + str(countIter-1) + ' ...')
+					saver_restore.restore(sess, outputPath+ path + '_iteration_'+ str(countIter-1))
+					print('...Done!')
+				else:
+					sess.run(init)
+					print('Restoring training Model from ' + outputPath+path + ' ...')
+					saver_restore.restore(sess, outputPath+path)
+					print('...Done!')
+			else:
+				sess.run(init)
+				print('Restoring training Model from ' + outputPath+path + '_final ...')
+				saver_restore.restore(sess, outputPath+ path + '_final')
+				print('...Done!')
 
                 it = 0
 	        holdon = 0
@@ -1036,14 +1043,14 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 			elif e == 0: 
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
-			else:
-				print("Saving model: " + outputPath+path+'_final')
-				saver.save(sess, outputPath+path + '_final')
+			
+				
 
 
 	print("Optimization Finished!")
 
-			
+	print("Saving model: " + outputPath+path+'_final')
+	saver.save(sess, outputPath+path + '_final')		
                 
 	tf.reset_default_graph()        
         
@@ -1645,7 +1652,7 @@ def main():
 			purity = np.load(purityFile)
 
 
-        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=False,isFullTraining=False)
+        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=True,isFullTraining=True)
 	else:
 		mean_full = np.load(mean_file)
 		std_full = np.load(std_file)
