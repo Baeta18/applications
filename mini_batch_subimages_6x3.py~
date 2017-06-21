@@ -909,7 +909,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 
 		if countIter == 0 or keepTraining==False:
 			sess.run(init)
-		elif keepTraining==True 
+		elif keepTraining==True: 
 			if isFullTraining == False:
 				if countIter > 1:
 					sess.run(init)
