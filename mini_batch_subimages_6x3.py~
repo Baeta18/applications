@@ -941,7 +941,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
  		epochs =  countIter+epochs+1
                 for e in range(countIter,epochs):
                         
-                        print("Epoch: " + str(e+1) + " / " + str(epochs-1))
+                        print("Epoch: " + str(e) + " / " + str(epochs-1))
                  
 			if useMinibatch == 1:
 				
