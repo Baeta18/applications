@@ -832,7 +832,7 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 
 
 	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
-	print("pool shape")	https://virtual.ufmg.br/20171/mod/vpl/forms/edit.php?id=78436&userid=126178#
+	print("pool shape")
 	print(pool4.get_shape())
 
 	conv5 = _conv_layer(pool4, [4,4,312,376], 'ft_conv5', weightDecay, is_training, pad='VALID')
