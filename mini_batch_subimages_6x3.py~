@@ -938,10 +938,10 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 		if useMinibatch == 1:
 			batchSize = int(batchSize/2)
 
- 		epochs =  countIter+epochs
+ 		epochs =  countIter+epochs+1
                 for e in range(countIter,epochs):
                         
-                        print("Epoch: " + str(e+1) + " / " + str(epochs))
+                        print("Epoch: " + str(e) + " / " + str(epochs))
                  
 			if useMinibatch == 1:
 				
@@ -1330,6 +1330,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 
 		
 
+        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMas
 	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(cropSize) + "/test/"
 	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
@@ -1371,6 +1372,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 	####################################### Define loss and optimizer
 	loss = loss_def(logits, y)
 
+        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMas
 	###################################### Evaluate model
 	correct = tf.nn.in_top_k(logits, y, 1)
 	# Return the number of true entries
@@ -1610,6 +1612,7 @@ def main():
 
 		if useMinibatch == 1:
 			print("Using minibatch balance")
+        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMas
 		else:
 			print("Not using minibatch balance")
 
