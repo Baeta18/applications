@@ -538,7 +538,7 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 		return conv_act
 
 	
-def convNet_ICPR_9(x, dropout, is_training, cropSize, weightDecay):
+def convNet_ICPR_11(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
@@ -809,8 +809,8 @@ def loss_def(logits, labels):
 def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay):
 
 	print("Cropsize " + str(cropSize))
-	if(cropSize == 9):
-		 _,logits = convNet_ICPR_9(x, keep_prob, is_training, cropSize, weightDecay)
+	if(cropSize == 11):
+		 _,logits = convNet_ICPR_11(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 17):
 		 _,logits = convNet_ICPR_17(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 33):
