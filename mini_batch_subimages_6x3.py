@@ -938,10 +938,11 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 		if useMinibatch == 1:
 			batchSize = int(batchSize/2)
 
- 
-                for e in range(countIter*epochs, 2*(countIter*epochs)):
+ 		start = countIter*epochs
+		epochs= 2*(countIter*epochs)
+                for e in range(start, epochs):
                         
-                        print("Epoch: " + str(e+1) + " / " + str(2*(countIter*epochs)))
+                        print("Epoch: " + str(e+1) + " / " + str(epochs))
                  
 			if useMinibatch == 1:
 				
@@ -1038,8 +1039,8 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 				drawGraphic(resultFile,graphicFile)
 
 			if e > 0 and e < epochs-1:
-				print("Saving model: " + outputPath+path+'_iteration_'+str(i))
-				saver.save(sess, outputPath+path+'_iteration_'+str(i))
+				print("Saving model: " + outputPath+path+'_iteration_'+str(e))
+				saver.save(sess, outputPath+path+'_iteration_'+str(e))
 			elif e == 0: 
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
