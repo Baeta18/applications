@@ -939,9 +939,9 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 			batchSize = int(batchSize/2)
 
  
-                for e in xrange(epochs):
+                for e in range(niter*epochs, 2*(niter*epochs)):
                         
-                        print("Epoch: " + str(i+1) + " / " + str(epochs))
+                        print("Epoch: " + str(e+1) + " / " + str(2*(niter*epochs)))
                  
 			if useMinibatch == 1:
 				
