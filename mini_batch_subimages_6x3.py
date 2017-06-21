@@ -911,7 +911,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 			sess.run(init)
 		elif keepTraining==True: 
 			if isFullTraining == False:
-				if countIter > 1:
+				if (countIter-1) > 1:
 					sess.run(init)
 					print('Restoring training Model from ' + outputPath+path + '_iteration_' + str(countIter-1) + ' ...')
 					saver_restore.restore(sess, outputPath+ path + '_iteration_'+ str(countIter-1))
@@ -938,9 +938,8 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 		if useMinibatch == 1:
 			batchSize = int(batchSize/2)
 
- 		start = countIter*epochs
-		epochs= 2*(countIter*epochs)
-                for e in range(start, epochs):
+ 		epochs =  countIter+epochs+1
+                for e in range(countIter,epochs):
                         
                         print("Epoch: " + str(e+1) + " / " + str(epochs))
                  
