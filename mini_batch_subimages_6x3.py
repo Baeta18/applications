@@ -932,7 +932,7 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 			batchSize = int(batchSize/2)
 
  
-                for i in xrange(epochs):
+                for e in xrange(epochs):
                         
                         print("Epoch: " + str(i+1) + " / " + str(epochs))
                  
@@ -1030,10 +1030,10 @@ def train(instance,dataPath,trainInstances,trainData,trainMask,validationData,va
 				validation(sess,countIter,resultFile,validationData,validationMask,mean_full,std_full,classesValidation,batch,cropSize,pred,acc_mean,soft,x,y,keep_prob,is_training,batch_loss,loss)
 				drawGraphic(resultFile,graphicFile)
 
-			if i > 0 and i < epochs-1:
+			if e > 0 and e < epochs-1:
 				print("Saving model: " + outputPath+path+'_iteration_'+str(i))
 				saver.save(sess, outputPath+path+'_iteration_'+str(i))
-			elif i == 0: 
+			elif e == 0: 
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
 			else:

@@ -1651,7 +1651,7 @@ def main():
 		std_full = np.load(std_file)
 		
 	print("FULL TEST...")
-	test(instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch, isFullTraining=False)
+	test(instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch, isFullTraining=True)
 	print("...Done!")
 	
 
