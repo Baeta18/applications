@@ -811,7 +811,7 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print("conv shape")
 	print(conv2.get_shape())
 
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
 	print("pool shape")
 	print(pool2.get_shape())
 	
@@ -821,7 +821,7 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print(conv3.get_shape())
 
 
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
 	print("pool shape")	
 	print(pool3.get_shape())
 
@@ -835,18 +835,11 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print("pool shape")
 	print(pool4.get_shape())
 
-	conv5 = _conv_layer(pool4, [4,4,312,376], 'ft_conv5', weightDecay, is_training, pad='VALID')
-	print("conv shape")
-	print(conv5.get_shape())
 
-
-	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool5', pad='VALID')
-	print("pool shape")	
-	print(pool5.get_shape())
 
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool5, [-1, 1*1*376])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		reshape = tf.reshape(pool4, [-1, 1*1*312])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
