@@ -564,8 +564,7 @@ def convNet_ICPR_11(x, dropout, is_training, cropSize, weightDecay):
 		weights = _variable_with_weight_decay('weights', shape=[1*1*128, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matm
-	print(conv2.get_shape())ul(drop_fc1, weights), biases), is_training, scope=scope.name))
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
@@ -586,8 +585,7 @@ def convNet_ICPR_11(x, dropout, is_training, cropSize, weightDecay):
 	
 def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]
-	print(conv2.get_shape())) ## default: 25x25
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
 	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
@@ -631,7 +629,6 @@ def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
 
 	# Output, class prediction
-	print(conv2.get_shape())
 	with tf.variable_scope('ft_fc3_logits') as scope:
 		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
@@ -652,8 +649,7 @@ def convNet_ICPR_33(x, dropout, is_training, cropSize, weightDecay):
 	print(pool1.get_shape())
 
 	
-	conv2 = _conv_layer(pool1, [4,4,64,128], 'ft_conv2'
-	print(conv2.get_shape()), weightDecay, is_training, pad='VALID')
+	conv2 = _conv_layer(pool1, [4,4,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
 	print("Conv")
 	print(conv2.get_shape())
@@ -676,7 +672,6 @@ def convNet_ICPR_33(x, dropout, is_training, cropSize, weightDecay):
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
-	print(conv2.get_shape())
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
 		weights = _variable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
@@ -695,8 +690,7 @@ def convNet_ICPR_33(x, dropout, is_training, cropSize, weightDecay):
 	return fc2, logits
 
 
-def convNet_ICPR_25(x, dropout, is_training, cropSize, weig
-	print(conv2.get_shape())htDecay):
+def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()

@@ -729,6 +729,7 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	return fc2, logits
 
 
+	print(conv2.get_shape())
 def convNet_ICPR_45(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
@@ -766,7 +767,8 @@ def convNet_ICPR_45(x, dropout, is_training, cropSize, weightDecay):
 	#print(conv4.get_shape())
 
 
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], stride
+	print(conv2.get_shape())s=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
 	#print("pool shape")	
 	#print(pool4.get_shape())
 
