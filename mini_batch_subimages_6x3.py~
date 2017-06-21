@@ -1652,7 +1652,7 @@ def main():
 			purity = np.load(purityFile)
 
 
-        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=True,isFullTraining=False)
+        	train(instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=True,isFullTraining=True)
 	else:
 		mean_full = np.load(mean_file)
 		std_full = np.load(std_file)
