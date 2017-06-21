@@ -28,7 +28,7 @@ from matplotlib.mlab import PCA as mlabPCA
 from matplotlib import pyplot as plt
 NUM_CLASSES = 2
 TEST_STR = ""
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.45)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
 
 
 class bcolors:
