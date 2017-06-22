@@ -734,7 +734,7 @@ def convNet_ICPR_41_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
 	print("conv shape")
 	print(conv1.get_shape())
 
