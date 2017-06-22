@@ -735,40 +735,40 @@ def convNet_ICPR_41(x, dropout, is_training, cropSize, weightDecay):
 	#print x.get_shape()
 	
 	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv1.get_shape())
+	print("conv shape")
+	print(conv1.get_shape())
 
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	#print("pool shape")	
-	#print(pool1.get_shape())
+	print("pool shape")	
+	print(pool1.get_shape())
 
 	conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv2.get_shape())
+	print("conv shape")
+	print(conv2.get_shape())
 
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	#print("pool shape")
-	#print(pool2.get_shape())
+	print("pool shape")
+	print(pool2.get_shape())
 	
 	
 	conv3 = _conv_layer(pool2, [4,4,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv3.get_shape())
+	print("conv shape")
+	print(conv3.get_shape())
 
 
 	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
-	#print("pool shape")	
-	#print(pool3.get_shape())
+	print("pool shape")	
+	print(pool3.get_shape())
 
 
 	conv4 = _conv_layer(pool3, [4,4,256,312], 'ft_conv4', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv4.get_shape())
+	print("conv shape")
+	print(conv4.get_shape())
 
 
 	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], stride=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
-	#print("pool shape")	
-	#print(pool4.get_shape())
+	print("pool shape")	
+	print(pool4.get_shape())
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool4, [-1, 1*1*312])
