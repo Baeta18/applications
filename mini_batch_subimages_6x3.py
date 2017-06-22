@@ -724,7 +724,7 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	print("Conv")
 	print(conv4.get_shape())
 	print("Pool")
-	print(pool3.get_shape())
+	print(pool4.get_shape())
 
 
 	with tf.variable_scope('ft_fc1') as scope:
