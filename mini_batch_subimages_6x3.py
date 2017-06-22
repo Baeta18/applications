@@ -729,7 +729,6 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	return fc2, logits
 
 
-	print(conv2.get_shape())
 def convNet_ICPR_45(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
