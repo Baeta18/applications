@@ -704,7 +704,7 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	
 	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
 	print("Conv")
 	print(conv2.get_shape())
 	print("Pool")
