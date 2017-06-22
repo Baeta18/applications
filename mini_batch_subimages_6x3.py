@@ -746,7 +746,7 @@ def convNet_ICPR_41(x, dropout, is_training, cropSize, weightDecay):
 	print("conv shape")
 	print(conv2.get_shape())
 
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
 	print("pool shape")
 	print(pool2.get_shape())
 	
@@ -756,7 +756,7 @@ def convNet_ICPR_41(x, dropout, is_training, cropSize, weightDecay):
 	print(conv3.get_shape())
 
 
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
 	print("pool shape")	
 	print(pool3.get_shape())
 
