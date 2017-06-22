@@ -1019,7 +1019,7 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 	elif(cropSize == 41):
 		if blocks == 3:
 			_,logits = convNet_ICPR_41_3blocks(x, keep_prob, is_training, cropSize, weightDecay)
-		else
+		else:
 			_,logits = convNet_ICPR_41_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
 
 	elif(cropSize == 45):
@@ -1124,7 +1124,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 
 	######## CONVNET
 	#### ICPR
-	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay)
+	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks)
 	
 	####################################### Define loss and optimizer
 	loss = loss_def(logits, y)

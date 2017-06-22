@@ -1124,7 +1124,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 
 	######## CONVNET
 	#### ICPR
-	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay)
+	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks)
 	
 	####################################### Define loss and optimizer
 	loss = loss_def(logits, y)
@@ -1618,7 +1618,7 @@ def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, bat
 
 	######## CONVNET
 	#### ICPR
-	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay)
+	_,logits = convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks)
 	
 	####################################### Define loss and optimizer
 	loss = loss_def(logits, y)
