@@ -1019,7 +1019,7 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 	elif(cropSize == 41):
 		if blocks == 3:
 			_,logits = convNet_ICPR_41_3blocks(x, keep_prob, is_training, cropSize, weightDecay)
-		else
+		else:
 			_,logits = convNet_ICPR_41_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
 
 	elif(cropSize == 45):
