@@ -695,7 +695,7 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [4,4,3,64], 'ft_conv1', weightDecay, is_training, pad='SAME')
+	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='SAME')
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
 	print("Conv")
 	print(conv1.get_shape())
@@ -728,7 +728,7 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool3, [-1, 2*2*312])
+		reshape = tf.reshape(pool4, [-1, 2*2*312])
 		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
