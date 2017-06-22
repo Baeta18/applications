@@ -751,7 +751,7 @@ def convNet_ICPR_41(x, dropout, is_training, cropSize, weightDecay):
 	print(pool2.get_shape())
 	
 	
-	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	conv3 = _conv_layer(pool2, [4,4,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
 	print("conv shape")
 	print(conv3.get_shape())
 
