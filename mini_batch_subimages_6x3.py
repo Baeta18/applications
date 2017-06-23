@@ -1702,7 +1702,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction"
-	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + + str(blocks) + "_blocks_" + str(cropSize)
+	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize)
 
 	if isFullTraining == False:
 		if countIter > 0:
