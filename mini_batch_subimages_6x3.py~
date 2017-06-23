@@ -1361,13 +1361,13 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
 			
-				
+	
+		print("Saving model: " + outputPath+path+'_final')
+		saver.save(sess, outputPath+path + '_final')				
 
 
 	print("Optimization Finished!")
-
-	print("Saving model: " + outputPath+path+'_final')
-	saver.save(sess, outputPath+path + '_final')		
+	
                 
 	tf.reset_default_graph()        
         

@@ -1626,7 +1626,7 @@ def validation(sess,countIter,resultFile,validationData,validationMask,mean_full
 	'''
 		
 
-def test(instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full,useMinibatch, isFullTraining=False, isDataAugmentation=False):
+def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full,useMinibatch, isFullTraining=False, isDataAugmentation=False):
 
 
 	trainings = ""	
