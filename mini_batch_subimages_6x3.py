@@ -1125,7 +1125,7 @@ def drawGraphic(valuesFile,graphicFile):
 	#maxValue = np.amax(training) if np.amax(training) > np.amax(validation) else np.amax(validation)
 	#minValue = np.amin(training) if np.amin(training) < np.amin(validation) else np.amin(validation)
 
-	plt.yticks(np.arange(0,10,0.5))
+	plt.yticks(np.arange(0,4,0.5))
 	plt.xticks(np.arange(0,epoch,1))
 	plt.legend(loc='best')
 

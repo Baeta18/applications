@@ -1080,7 +1080,10 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 		else:
 			_,logits = convNet_ICPR_33_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 25):
-		 _,logits = convNet_ICPR_25(x, keep_prob, is_training, cropSize, weightDecay)
+		if blocks == 3:
+			_,logits = convNet_ICPR_25_3blocks(x, keep_prob, is_training, cropSize, weightDecay)
+		else:
+			_,logits = convNet_ICPR_25_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 41):
 		if blocks == 3:
 			_,logits = convNet_ICPR_41_3blocks(x, keep_prob, is_training, cropSize, weightDecay)
@@ -1125,7 +1128,7 @@ def drawGraphic(valuesFile,graphicFile):
 	#maxValue = np.amax(training) if np.amax(training) > np.amax(validation) else np.amax(validation)
 	#minValue = np.amin(training) if np.amin(training) < np.amin(validation) else np.amin(validation)
 
-	plt.yticks(np.arange(0,10,0.5))
+	plt.yticks(np.arange(0,4,0.5))
 	plt.xticks(np.arange(0,epoch,1))
 	plt.legend(loc='best')
 
@@ -1702,7 +1705,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction"
-	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + + str(blocks) + "_blocks_" + str(cropSize)
+	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize)
 
 	if isFullTraining == False:
 		if countIter > 0:
