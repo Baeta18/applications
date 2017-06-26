@@ -829,7 +829,7 @@ def convNet_ICPR_41_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	print(conv4.get_shape())
 
 
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
 	print("pool shape")	
 	print(pool4.get_shape())
 
