@@ -44,8 +44,8 @@ def main():
 			img[row][column] = cont
 			cont += 1
 	print(img)
-	#finalData = manipulateBorderArray(data, cropSize)
-	
+	finalData = manipulateBorderArray(img, cropSize)
+	print(finalData.shape)
 
 if __name__ == "__main__":
     	main()
