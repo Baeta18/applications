@@ -36,7 +36,7 @@ def manipulateBorderArray(data, cropSize):
 def main():
 	cont = 0
 	height = width = 6
-	cropSize = 5
+	cropSize = 3
 	img = np.empty([height, width],dtype="uint8") #row,column 
 
 	#Save Image in Numpy Array
