@@ -44,7 +44,7 @@ def main():
 		for column in xrange(width):
 			img[row][column] = cont
 			cont += 1
-	print(img)
+	print(img.shape)
 	finalData = manipulateBorderArray(img_as_float(img), cropSize)
 	print(finalData.shape)
 
