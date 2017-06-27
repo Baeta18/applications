@@ -16,9 +16,9 @@ def manipulateBorderArray(data, cropSize):
 	flipped_bottom = np.flipud(crop_bottom)
 
 	h_new,w_new = h+mask*2, w+mask*2
-	data_border = np.zeros((h_new, w_new, len(data[0][0])))
+	data_border = np.zeros((h_new, w_new))
 	#print data_border.shape
-	data_border[mask:h+mask,mask:w+mask,:] = data
+	data_border[mask:h+mask,mask:w+mask] = data
 
 	data_border[mask:h+mask, 0:mask] = mirror_left[:, mask+1:]
 	data_border[mask:h+mask, w_new-mask:w_new] = mirror_right[:,0:mask]
