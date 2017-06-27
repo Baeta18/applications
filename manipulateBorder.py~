@@ -6,9 +6,9 @@ def manipulateBorderArray(data, cropSize):
 
 	h,w = 6, 6
 	crop_left = data[0:h,0:cropSize]
-	crop_right = data[0:h,w-cropSize:w,:]
-	crop_top = data[0:cropSize,0:w,:]
-	crop_bottom = data[h-cropSize:h,0:w,:]
+	crop_right = data[0:h,w-cropSize:w]
+	crop_top = data[0:cropSize,0:w]
+	crop_bottom = data[h-cropSize:h,0:w]
 
 	mirror_left = np.fliplr(crop_left)
 	mirror_right = np.fliplr(crop_right)
@@ -20,15 +20,15 @@ def manipulateBorderArray(data, cropSize):
 	#print data_border.shape
 	data_border[mask:h+mask,mask:w+mask,:] = data
 
-	data_border[mask:h+mask, 0:mask, :] = mirror_left[:, mask+1:, :]
-	data_border[mask:h+mask, w_new-mask:w_new ,:] = mirror_right[:,0:mask,:]
-	data_border[0:mask, mask:w+mask, :] = flipped_top[mask+1:, : ,:]
-	data_border[h+mask:h+mask+mask, mask:w+mask, :] = flipped_bottom[0:mask, : ,:]
+	data_border[mask:h+mask, 0:mask] = mirror_left[:, mask+1:]
+	data_border[mask:h+mask, w_new-mask:w_new] = mirror_right[:,0:mask]
+	data_border[0:mask, mask:w+mask] = flipped_top[mask+1:, :]
+	data_border[h+mask:h+mask+mask, mask:w+mask] = flipped_bottom[0:mask, :]
 
-	data_border[0:mask, 0:mask, :] = flipped_top[mask+1:, 0:mask ,:]
-	data_border[0:mask, w+mask:w+mask+mask, :] = flipped_top[mask+1:, w-mask:w ,:]
-	data_border[h+mask:h+mask+mask, 0:mask, :] = flipped_bottom[0:mask, 0:mask ,:]
-	data_border[h+mask:h+mask+mask, w+mask:w+mask+mask, :] = flipped_bottom[0:mask, w-mask:w ,:]
+	data_border[0:mask, 0:mask] = flipped_top[mask+1:, 0:mask]
+	data_border[0:mask, w+mask:w+mask+mask] = flipped_top[mask+1:, w-mask:w]
+	data_border[h+mask:h+mask+mask, 0:mask] = flipped_bottom[0:mask, 0:mask]
+	data_border[h+mask:h+mask+mask, w+mask:w+mask+mask] = flipped_bottom[0:mask, w-mask:w]
 
 	#scipy.misc.imsave('C:\\Users\\Keiller\\Desktop\\outfile.jpg', data_border)
 	return data_border
