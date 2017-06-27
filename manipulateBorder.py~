@@ -1,4 +1,5 @@
 import numpy as np
+from skimage import img_as_float
 	
 def manipulateBorderArray(data, cropSize):
 	mask = int(cropSize/2)
@@ -7,7 +8,7 @@ def manipulateBorderArray(data, cropSize):
 	crop_left = data[0:h,0:cropSize]
 	crop_right = data[0:h,w-cropSize:w,:]
 	crop_top = data[0:cropSize,0:w,:]
-	crop_bottom = data[h-cropSize:h,0:w,:]
+	crop_botfrom skimage import img_as_floattom = data[h-cropSize:h,0:w,:]
 
 	mirror_left = np.fliplr(crop_left)
 	mirror_right = np.fliplr(crop_right)
@@ -27,7 +28,7 @@ def manipulateBorderArray(data, cropSize):
 	data_border[0:mask, 0:mask, :] = flipped_top[mask+1:, 0:mask ,:]
 	data_border[0:mask, w+mask:w+mask+mask, :] = flipped_top[mask+1:, w-mask:w ,:]
 	data_border[h+mask:h+mask+mask, 0:mask, :] = flipped_bottom[0:mask, 0:mask ,:]
-	data_border[h+mask:h+mask+mask, w+mask:w+mask+mask, :] = flipped_bottom[0:mask, w-mask:w ,:]
+	data_bofrom skimage import img_as_floatrder[h+mask:h+mask+mask, w+mask:w+mask+mask, :] = flipped_bottom[0:mask, w-mask:w ,:]
 
 	#scipy.misc.imsave('C:\\Users\\Keiller\\Desktop\\outfile.jpg', data_border)
 	return data_border
