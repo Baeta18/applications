@@ -4,7 +4,7 @@ from skimage import img_as_float
 def manipulateBorderArray(data, cropSize):
 	mask = int(cropSize/2)
 
-	h,w = len(data), len(data[0])
+	h,w = 6, 6
 	crop_left = data[0:h,0:cropSize]
 	crop_right = data[0:h,w-cropSize:w,:]
 	crop_top = data[0:cropSize,0:w,:]
@@ -44,8 +44,8 @@ def main():
 		for column in xrange(width):
 			img[row][column] = cont
 			cont += 1
-	print(img.shape)
-	finalData = manipulateBorderArray(img_as_float(img), cropSize)
+
+	finalData = manipulateBorderArray(img, cropSize)
 	print(finalData.shape)
 
 if __name__ == "__main__":
