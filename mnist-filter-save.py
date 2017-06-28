@@ -323,6 +323,9 @@ plotNNFilter(units,3,label)
 units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
 plotNNFilter(units,4,label)
 
+units = sess.run(pool4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,5,label)
+
 
 
 '''
