@@ -10,11 +10,11 @@ import math
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
 
 
-def getActivations(layer,stimuli):
+def getActivations(layer,stimuli,layer_number):
     units = sess.run(layer,feed_dict={x:np.reshape(stimuli,[1,784],order='F'),keep_prob:1.0})
-    plotNNFilter(units)
+    plotNNFilter(units,layer_number)
 
-def plotNNFilter(units):
+def plotNNFilter(units,layer_number):
     filters = units.shape[3]
     plt.figure(1, figsize=(20,20))
     n_columns = 6
@@ -23,7 +23,7 @@ def plotNNFilter(units):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
         plt.plot(units[0,:,:,i])
-       
+    plt.savefig("weights" + str(layer_number) + ".png")
 print("Load dataset")
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
@@ -66,7 +66,7 @@ print("test accuracy %g"%(testAccuracy))
 imageToUse = mnist.test.images[0]
 #plt.imshow(np.reshape(imageToUse,[28,28]), interpolation="nearest", cmap="gray")
 
-getActivations(hidden_1,imageToUse)
-getActivations(hidden_2,imageToUse)
-getActivations(hidden_3,imageToUse)
+getActivations(hidden_1,imageToUse,1)
+getActivations(hidden_2,imageToUse,2)
+getActivations(hidden_3,imageToUse,3)
 
