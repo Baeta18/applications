@@ -128,6 +128,8 @@ def plotNNFilter(units,layer_number,label):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
         plt.imshow(units[0,:,:,i],interpolation="nearest")
+        separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
+        scipy.misc.imsave(separeted_path, units[0,:,:,i])
 
     filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
     print("Saving image at: " + filter_path)
@@ -220,10 +222,11 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
+#patch = img[180:221,180:221,:]
+#label = retrieveClass(mask[200][200])
 
-
-patch = img[180:221,180:221,:]
-label = retrieveClass(mask[200][200])
+patch = img[680:721,480:521,:]
+label = retrieveClass(mask[700][500])
 
 #patch = img[470:511,130:171,:]
 #label = 1
