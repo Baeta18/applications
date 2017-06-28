@@ -199,11 +199,10 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
-patch = img[0:41,0:41,:]
-label = mask[10][10]
+patch = img[470:511,130:171,:]
+label = mask[500][150]
 
-print(mask[500][500])
-print(mask[150][500])
+print(patch.shape)
 print(mask[500][150])
 
 '''
