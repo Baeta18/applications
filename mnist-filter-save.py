@@ -49,7 +49,8 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 batchSize = 50
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-init = tf.global_variables_initializer()
+#init = tf.global_variables_initializer()
+init = tf.initialize_all_variables()
 sess.run(init)
 for i in range(1001):
     batch = mnist.train.next_batch(batchSize)
