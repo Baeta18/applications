@@ -23,7 +23,7 @@ def plotNNFilter(units):
         plt.title('Filter ' + str(i))
         plt.plot(units[0,:,:,i], interpolation="nearest", cmap="gray")
        
-
+print("Load dataset")
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
 
