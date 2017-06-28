@@ -3,7 +3,7 @@ import matplotlib as mp
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-from tensorflow.examples.tutorials.mnist import input_data
+import input_data
 import math
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
