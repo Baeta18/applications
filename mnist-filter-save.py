@@ -9,7 +9,7 @@ from PIL import Image, ImageOps
 import math
 from skimage import img_as_float
 
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
+gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
 
 def manipulateBorderArray(data, cropSize):
 	mask = int(cropSize/2)
@@ -253,7 +253,8 @@ correct = tf.nn.in_top_k(logits, y, 1)
 # Return the number of true entries
 acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
 
-model_path = "/media/tensorflow/coffee/output/models/4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6"
+
+model_path = "/media/tensorflow/coffee/output/models/4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6_final"
 saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
