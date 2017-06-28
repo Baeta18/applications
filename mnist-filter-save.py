@@ -120,16 +120,13 @@ def loadImages(dataPath, instances, cropSize,type):
 
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
+	plt.figure(1, figsize=(20,20))
+	gs1 = gridspec.GridSpec(20, 20)
+	gs1.update(wspace=0.5, hspace=0.5) # set the spacing between axes. 
 
 	n_columns = 20
-	n_rows = int(math.ceil(filters / n_columns) + 1)
+	n_rows = math.ceil(filters / n_columns) + 1
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
-
-	plt.figure(1, figsize=(n_columns,n_rows))
-	gs1 = gridspec.GridSpec(n_columns,n_rows)
-	gs1.update(wspace=0.05, hspace=0.5) # set the spacing between axes. 
-
-
 	for i in range(filters):
 		#plt.subplot(n_rows, n_columns, i+1)
 		plt.subplot(gs1[i])
