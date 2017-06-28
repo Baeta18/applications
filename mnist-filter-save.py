@@ -119,7 +119,8 @@ def getActivations(layer,stimuli,layer_number):
     plotNNFilter(units,layer_number)
 
 def plotNNFilter(units,layer_number):
-    filters = units.shape[3]
+    #filters = units.shape[3]
+    filters = 20
     plt.figure(1, figsize=(20,20))
     n_columns = 6
     n_rows = math.ceil(filters / n_columns) + 1
@@ -200,12 +201,10 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
-batch_x = []
-batch_y = []
-batch_y.append(mask[10][10])
-batch_x.append(img[0:41,0:41,:])
-
-
+patch = img[0:41,0:41,:]
+label = mask[10][10]
+batch_x = [patch]
+batch_y = [label]
 
 NUM_CLASSES = 2
 n_input = 41*41*3 
@@ -265,7 +264,10 @@ testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,i
 
 print("test accuracy %g"%(testAccuracy))
 
-
+getActivations(conv1,patch,1)
+getActivations(conv2,patch,2)
+getActivations(conv3,patch,3)
+getActivations(conv4,patch,4)
 
 '''
 print("Load dataset")
