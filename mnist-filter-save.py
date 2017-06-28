@@ -131,10 +131,9 @@ def plotNNFilter(units,layer_number,label):
 		ax = plt.Axes(fig, [0., 0., 1., 1.])
 		ax.set_axis_off()
 		fig.add_axes(ax)
-
-        plt.imshow(units[0,:,:,i],interpolation="nearest")
-        separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
-    	plt.savefig(separeted_path)
+		plt.imshow(units[0,:,:,i],interpolation="nearest")
+		separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
+		plt.savefig(separeted_path)
 
     filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
     print("Saving image at: " + filter_path)
