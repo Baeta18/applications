@@ -154,12 +154,14 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
-label = mask[10][10]
-patch = img[0:40,0:40,:]
-print(patch.shape)
+batch_x = []
+batch_y = []
+batch_y.append(mask[10][10])
+batch_x.append(img[0:40,0:40,:])
 
 
-'''
+
+
 weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
@@ -209,10 +211,10 @@ saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
 
-testAccuracy = sess.run(acc_mean, feed_dict={x:mnist.test.images,true_y:mnist.test.labels, keep_prob:1.0})
+testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.0})
 print("test accuracy %g"%(testAccuracy))
 
-'''
+
 
 '''
 print("Load dataset")
