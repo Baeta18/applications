@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import input_data
+from PIL import Image, ImageOps
 import math
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
