@@ -153,8 +153,11 @@ print(trainData.shape)
 print("Mask shape")
 print(trainMask.shape)
 '''
+data[curMap, curX-mask:curX+mask+1, curY-mask:curY+mask+1, :]
+label = mask[10][10]
+patch = img[0:40,0:40,:]
+print(patch.shape)
 
-print(mask[10][10])
 
 '''
 weightDecay = 0.005
@@ -196,10 +199,19 @@ with tf.variable_scope('ft_fc3_logits') as scope:
 	biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 	logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
+
+correct = tf.nn.in_top_k(logits, y, 1)
+# Return the number of true entries
+acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
+
 model_path = "/media/tensorflow/coffee/output/models/4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6"
 saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
+
+testAccuracy = sess.run(acc_mean, feed_dict={x:mnist.test.images,true_y:mnist.test.labels, keep_prob:1.0})
+print("test accuracy %g"%(testAccuracy))
+
 '''
 
 '''
