@@ -10,6 +10,45 @@ import math
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
 
+def read_image_P2_int16(filename):
+	fp = open(filename,"r")
+
+	# Read the type of PGM
+	magic_number = (fp.readline()).split()
+
+	if magic_number[0] != "P2":
+		print "This is not a P2 image"
+		return 0
+		
+	# Search for comments
+	info = (fp.readline()).split()
+	if info[0].startswith('#'):
+		#print info
+		info = fp.readline().split()
+
+	# Read Width and Height
+	width  = int(info[0])
+	height = int(info[1])
+	#print width, height
+
+	# Read the Max Grey Level
+	max_gray_level = (fp.readline()).split()
+	#print max_gray_level
+
+	# END THE HEADER
+
+	#Create New Array
+	img = np.empty([height, width],dtype="uint8") #row,column 
+
+	#Save Image in Numpy Array
+	for row in xrange(height):
+		for column in xrange(width):
+			raw = fp.readline()
+			img[row][column] = raw
+
+	##print np.bincount(img.astype(int).flatten())
+	return img
+
 def loadImages(dataPath, instances, cropSize,type):
         #type - 0 - load train image 1 - load validation image
 	images = []
