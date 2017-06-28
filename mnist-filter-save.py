@@ -9,6 +9,7 @@ from PIL import Image, ImageOps
 import math
 from skimage import img_as_float
 import scipy.misc
+import matplotlib.gridspec as gridspec
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
 
@@ -120,17 +121,17 @@ def loadImages(dataPath, instances, cropSize,type):
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
 	plt.figure(1, figsize=(20,20))
+	gs1 = gridspec.GridSpec(4, 4)
+    gs1.update(wspace=0.025, hspace=0.05) # set the spacing between axes. 
 
 	n_columns = 20
 	n_rows = math.ceil(filters / n_columns) + 1
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 	for i in range(filters):
-		plt.subplot(n_rows, n_columns, i+1)
-		plt.tight_layout()
+		#plt.subplot(n_rows, n_columns, i+1)
+		plt.subplot(gs1[i])
 		#plt.title('Filter ' + str(i))
 		plt.axis('off')
-		plt.subplots_adjust(hspace=0.01)
-		plt.subplots_adjust(wspace=0.1)
 		plt.imshow(units[0,:,:,i],interpolation="nearest")
 		#separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
 		#plt.savefig(separeted_path,dpi = 50)
