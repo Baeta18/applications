@@ -180,6 +180,15 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 
 		return conv_act
 
+def normalizeImages(data, mean_full, std_full):
+	data[:,:,:,0] = np.subtract(data[:,:,:,0], mean_full[0])
+	data[:,:,:,1] = np.subtract(data[:,:,:,1], mean_full[1])
+	data[:,:,:,2] = np.subtract(data[:,:,:,2], mean_full[2])
+	
+	data[:,:,:,0] = np.divide(data[:,:,:,0], std_full[0])
+	data[:,:,:,1] = np.divide(data[:,:,:,1], std_full[1])
+	data[:,:,:,2] = np.divide(data[:,:,:,2], std_full[2])
+
 def retrieveClass(val):
 
 	if val == 1.0:
@@ -281,6 +290,8 @@ saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
 
+normalizeImages(batch_x, mean_full, std_full)
+batch_x = np.reshape(batch_x,(-1,n_input))
 testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,is_training: False})
 print(testAccuracy)
 
