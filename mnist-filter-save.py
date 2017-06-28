@@ -125,7 +125,7 @@ def plotNNFilter(units,layer_number,label):
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 	for i in range(filters):
 		plt.subplot(n_rows, n_columns, i+1)
-		plt.title('Filter ' + str(i))
+		#plt.title('Filter ' + str(i))
 		plt.axis('off')
 		plt.imshow(units[0,:,:,i],interpolation="nearest")
 		#separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
