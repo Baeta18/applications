@@ -216,7 +216,7 @@ print(trainMask.shape)
 
 patch = img[80:121,80:121,:]
 label = retrieveClass(mask[100][100])
-print(label)
+
 
 
 img_path = "/media/tensorflow/coffee/output/filters/image_label_" + str(label) + ".png"
@@ -286,16 +286,16 @@ print("test accuracy %g"%(testAccuracy))
 
 units = sess.run(conv1,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
 #units,layer,label
-plotNNFilter(units,1,1)
+plotNNFilter(units,1,label)
 
 units = sess.run(conv2,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,2,1)
+plotNNFilter(units,2,label)
 
 units = sess.run(conv3,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,3,1)
+plotNNFilter(units,3,label)
 
 units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,4,1)
+plotNNFilter(units,4,label)
 
 
 
