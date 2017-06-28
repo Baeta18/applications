@@ -260,7 +260,9 @@ saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
 
-testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.0})
+testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,is_training: False})
+
+
 print("test accuracy %g"%(testAccuracy))
 
 
