@@ -133,6 +133,52 @@ def plotNNFilter(units,layer_number):
     print("Saving image at: " + filter_path)
     plt.savefig(filter_path)
 
+def leakyReLU(x, alpha=0.1):
+	return tf.maximum(alpha*x,x)
+
+def _variable_on_cpu(name, shape, ini):
+	with tf.device('/cpu:0'):
+		var = tf.get_variable(name, shape, initializer=ini, dtype=tf.float32)
+	return var
+
+def _variable_with_weight_decay(name, shape, ini, wd):
+	var = _variable_on_cpu(name, shape, ini)
+	#tf.contrib.layers.xavier_initializer_conv2d(dtype=tf.float32)
+	#tf.contrib.layers.xavier_initializer(dtype=tf.float32))
+	#tf.truncated_normal_initializer(stddev=stddev, dtype=tf.float32))
+	if wd is not None:
+		weight_decay = tf.mul(tf.nn.l2_loss(var), wd, name='weight_loss') # multiply || mul
+		tf.add_to_collection('losses', weight_decay)
+	return var
+
+def _max_pool(input, kernel, strides, name, pad='SAME', debug=False):
+	pool = tf.nn.max_pool(input, ksize=kernel, strides=strides, padding=pad, name=name)
+	if debug:
+		pool = tf.Print(pool, [tf.shape(pool)], message='Shape of %s' % name)
+
+	return pool
+	
+def _batch_norm(input, is_training, scope=None):
+    # Note: is_training is tf.placeholder(tf.bool) type
+    return tf.cond(is_training,  
+				lambda: tf.contrib.layers.batch_norm(input, is_training=True, center=False, updates_collections=None, scope=scope+'_bn'),  
+                lambda: tf.contrib.layers.batch_norm(input, is_training=False, center=False, updates_collections=None, scope=scope+'_bn', reuse=True)
+				)
+
+def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', strides=[1,1,1,1], batchNorm=True):
+	with tf.variable_scope(name) as scope:
+		weights = _variable_with_weight_decay('weights', shape=kernelShape, ini=tf.contrib.layers.xavier_initializer_conv2d(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', kernelShape[-1], tf.constant_initializer(0.1))
+
+		conv_op = tf.nn.conv2d(input, weights, strides, padding=pad)
+		conv_op_add_bias = tf.nn.bias_add(conv_op, biases)
+
+		if batchNorm == True:
+			conv_act = leakyReLU(_batch_norm(conv_op_add_bias, is_training, scope=scope.name))
+		else:
+			conv_act = leakyReLU(conv_op_add_bias)
+
+		return conv_act
 
 tf.reset_default_graph()
 outputPath = "/media/tensorflow/coffee/output/"
