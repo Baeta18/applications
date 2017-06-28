@@ -132,6 +132,7 @@ def plotNNFilter(units,layer_number,label):
 		#plt.savefig(separeted_path,dpi = 50)
 		#plt.close()
 
+	plt.subplots_adjust(hspace=0.1)
 	filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
 	print("Saving image at: " + filter_path)
 	plt.savefig(filter_path)
