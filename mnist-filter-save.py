@@ -180,6 +180,17 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 
 		return conv_act
 
+def retrieveClass(val):
+
+	if val == 1.0:
+		current_class = 1
+	elif val == 0.0:
+		current_class = 0
+	else:
+		print("ERROR: mask value not binary ", val)
+
+	return current_class
+
 tf.reset_default_graph()
 outputPath = "/media/tensorflow/coffee/output/"
 mean_file = outputPath + "/mean_std/5_mean_full.npy"
@@ -204,7 +215,7 @@ print(trainMask.shape)
 #label = mask[500][150]
 
 patch = img[80:121,80:121,:]
-label = mask[100][100]
+label = retrieveClass(mask[100][100])
 print(label)
 
 
