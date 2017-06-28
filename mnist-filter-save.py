@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib as mp
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
