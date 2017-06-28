@@ -153,7 +153,7 @@ print(trainData.shape)
 print("Mask shape")
 print(trainMask.shape)
 '''
-data[curMap, curX-mask:curX+mask+1, curY-mask:curY+mask+1, :]
+
 label = mask[10][10]
 patch = img[0:40,0:40,:]
 print(patch.shape)
