@@ -212,7 +212,6 @@ weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
-is_training = tf.placeholder(tf.bool, [], name='is_training')
 dropout = 0.5 # Dropout, probability to keep units
 
 
@@ -259,7 +258,7 @@ saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
 
-testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,is_training: False})
+testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.})
 
 
 print("test accuracy %g"%(testAccuracy))
