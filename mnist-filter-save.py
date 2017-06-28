@@ -204,7 +204,7 @@ batch_x = []
 batch_y = []
 batch_y.append(mask[10][10])
 batch_x.append(img[0:41,0:41,:])
-print(len(batch_x[0]))
+print(batch_x[0].shape)
 
 '''
 NUM_CLASSES = 2
