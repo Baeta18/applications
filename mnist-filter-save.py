@@ -203,7 +203,7 @@ print(trainMask.shape)
 batch_x = []
 batch_y = []
 batch_y.append(mask[10][10])
-batch_x.append(img[0:40,0:40,:])
+batch_x.append(img[0:41,0:41,:])
 
 
 NUM_CLASSES = 2
