@@ -135,6 +135,7 @@ def plotNNFilter(units,layer_number,label):
 	filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
 	print("Saving image at: " + filter_path)
 	plt.savefig(filter_path)
+	plt.close()
 
 def leakyReLU(x, alpha=0.1):
 	return tf.maximum(alpha*x,x)
