@@ -120,17 +120,13 @@ def loadImages(dataPath, instances, cropSize,type):
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
 	plt.figure(1, figsize=(20,20))
-	ax = plt.Axes(fig, [0., 0., 1., 1.])
-	ax.set_axis_off()
+	plt.axis("off")
 	n_columns = 12
 	n_rows = math.ceil(filters / n_columns) + 1
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 	for i in range(filters):
 		plt.subplot(n_rows, n_columns, i+1)
 		plt.title('Filter ' + str(i))
-
-		
-		fig.add_axes(ax)
 		plt.imshow(units[0,:,:,i],interpolation="nearest")
 		#separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
 		#plt.savefig(separeted_path,dpi = 50)
