@@ -7,6 +7,7 @@ import tensorflow.contrib.slim as slim
 import input_data
 from PIL import Image, ImageOps
 import math
+from skimage import img_as_float
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
 
