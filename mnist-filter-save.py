@@ -182,10 +182,10 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 
 tf.reset_default_graph()
 outputPath = "/media/tensorflow/coffee/output/"
-mean_file = outputPath + "/mean_std/4_mean_full.npy"
-std_file = outputPath + "/mean_std/4_std_full.npy"	
+mean_file = outputPath + "/mean_std/5_mean_full.npy"
+std_file = outputPath + "/mean_std/5_std_full.npy"	
 
-trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["9_6"], 41,1)
+trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["8_7"], 41,1)
 print("Loading mean and std")
 mean_full = np.load(mean_file)
 std_full = np.load(std_file)
@@ -254,7 +254,7 @@ correct = tf.nn.in_top_k(logits, y, 1)
 acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
 
 
-model_path = "/media/tensorflow/coffee/output/models/4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6_final"
+model_path = "/media/tensorflow/coffee/output/models/5_model_6x3_4_blocks_41_8_7_8_5_9_5_7_5_7_7_8_6_final"
 saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
