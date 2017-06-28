@@ -122,7 +122,7 @@ def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
 
 	n_columns = 20
-	n_rows = math.ceil(filters / n_columns) + 1
+	n_rows = int(math.ceil(filters / n_columns) + 1)
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 
 	plt.figure(1, figsize=(n_rows,n_columns))
