@@ -124,7 +124,7 @@ def plotNNFilter(units,layer_number,label):
 	ax.set_axis_off()
 	n_columns = 12
 	n_rows = math.ceil(filters / n_columns) + 1
-    print("Total columns " + str(n_columns) + " rows " + str(n_rows))
+	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
     for i in range(filters):
 		plt.subplot(n_rows, n_columns, i+1)
 		plt.title('Filter ' + str(i))
