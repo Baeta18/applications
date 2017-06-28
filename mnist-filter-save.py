@@ -201,6 +201,12 @@ print(trainMask.shape)
 
 patch = img[0:41,0:41,:]
 label = mask[10][10]
+
+print(mask[500][500])
+print(mask[150][500])
+print(mask[500][150])
+
+'''
 batch_x = [patch]
 batch_y = [label]
 
@@ -274,7 +280,7 @@ plotNNFilter(units,3)
 
 units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
 plotNNFilter(units,4)
-
+'''
 
 
 '''
