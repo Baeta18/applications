@@ -181,6 +181,7 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 		return conv_act
 
 def normalizeImages(data, mean_full, std_full):
+	print(data)
 	data[:,:,:,0] = np.subtract(data[:,:,:,0], mean_full[0])
 	data[:,:,:,1] = np.subtract(data[:,:,:,1], mean_full[1])
 	data[:,:,:,2] = np.subtract(data[:,:,:,2], mean_full[2])
