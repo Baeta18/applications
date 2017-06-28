@@ -114,9 +114,7 @@ def loadImages(dataPath, instances, cropSize,type):
         else:
                 return np.asarray(images), np.asarray(masks)
 
-def getActivations(layer,stimuli,layer_number):
-    units = sess.run(layer,feed_dict={x:stimuli,keep_prob:1.0})
-    plotNNFilter(units,layer_number)
+
 
 def plotNNFilter(units,layer_number):
     #filters = units.shape[3]
@@ -212,6 +210,7 @@ weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
+is_training = tf.placeholder(tf.bool, [], name='is_training')
 dropout = 0.5 # Dropout, probability to keep units
 
 
@@ -258,15 +257,25 @@ saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
 
-testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.})
+testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,is_training: False})
 
 
 print("test accuracy %g"%(testAccuracy))
 
-getActivations(conv1,batch_x,1)
-getActivations(conv2,batch_x,2)
-getActivations(conv3,batch_x,3)
-getActivations(conv4,batch_x,4)
+
+units = sess.run(conv1,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,layer_number)
+
+units = sess.run(conv2,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,layer_number)
+
+units = sess.run(conv3,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,layer_number)
+
+units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,layer_number)
+
+
 
 '''
 print("Load dataset")
