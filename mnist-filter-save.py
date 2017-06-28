@@ -9,6 +9,37 @@ import math
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1)
 
+def loadImages(dataPath, instances, cropSize,type):
+        #type - 0 - load train image 1 - load validation image
+	images = []
+	masks = []
+        means = []
+        stds = []
+
+	for i in instances:
+                print("Loading image " + dataPath+i)
+		try:
+			img = Image.open(dataPath+i+"/image.ppm")
+			mask = read_image_P2_int16(dataPath+i+"/mascara.pgm")
+		except IOError:
+			print "Could not open file from ", dataPath
+
+		img.load()
+		imgFloat = manipulateBorderArray(img_as_float(img), cropSize)
+		maskBinary = np.floor(img_as_float(mask)+0.5)
+		##print np.bincount(maskBinary.astype(int).flatten())
+		
+		images.append(imgFloat)
+		masks.append(maskBinary)
+              
+                if(type == 0):
+                        mean,std = computeImageMean(imgFloat,cropSize)
+                        means.append(mean)
+                        stds.append(std)
+	if(type == 0 or type == 2):
+                return np.asarray(images), np.asarray(masks),np.asarray(means),np.asarray(stds)
+        else:
+                return np.asarray(images), np.asarray(masks)
 
 def getActivations(layer,stimuli,layer_number):
     units = sess.run(layer,feed_dict={x:np.reshape(stimuli,[1,784],order='F'),keep_prob:1.0})
@@ -19,17 +50,78 @@ def plotNNFilter(units,layer_number):
     plt.figure(1, figsize=(20,20))
     n_columns = 6
     n_rows = math.ceil(filters / n_columns) + 1
+    print("Total columns " + str(n_columns) + " rows " + str(n_rows))
     for i in range(filters):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
         plt.imshow(units[0,:,:,i],interpolation="nearest",cmap="gray")
-    plt.savefig("weights" + str(layer_number) + ".png")
-print("Load dataset")
-mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
+    filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + ".png"
+    print("Saving image at: " + filter_path)
+    plt.savefig(filter_path)
 
 
 tf.reset_default_graph()
+
+mean_file = outputPath + "/mean_std/4_mean_full.npy"
+std_file = outputPath + "/mean_std/4_std_full.npy"	
+
+trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["9_6"], 41,1)
+print("Loading mean and std")
+mean_full = np.load(mean_file)
+std_full = np.load(std_file)
+'''
+weightDecay = 0.005
+x = tf.placeholder(tf.float32, [None, n_input])
+y = tf.placeholder(tf.int32, [None])
+keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
+is_training = tf.placeholder(tf.bool, [], name='is_training')
+
+
+x = tf.reshape(x, shape=[-1, 41, 41, 3]) ## default: 25x25
+conv1 = _conv_layer(x, [5,5,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+
+with tf.variable_scope('ft_fc1') as scope:
+	reshape = tf.reshape(pool4, [-1, 2*2*312])
+	weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+	biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+	drop_fc1 = tf.nn.dropout(reshape, dropout)
+	fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+
+# Fully connected layer 2
+with tf.variable_scope('ft_fc2') as scope:
+	weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+	biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+	# Apply Dropout
+	drop_fc2 = tf.nn.dropout(fc1, dropout)
+	fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+# Output, class prediction
+with tf.variable_scope('ft_fc3_logits') as scope:
+	weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+	biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+	logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+model_path = "/media/tensorflow/coffee/output/models/4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6"
+saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
+sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+saver.restore(sess, model_path)
+'''
+
+'''
+print("Load dataset")
+mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+
+init = tf.initialize_all_variables()
+sess.run(init)
 
 x = tf.placeholder(tf.float32, [None, 784],name="x-in")
 true_y = tf.placeholder(tf.float32, [None, 10],name="y-in")
@@ -49,10 +141,7 @@ correct_prediction = tf.equal(tf.argmax(out_y,1), tf.argmax(true_y,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 batchSize = 50
-sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
-#init = tf.global_variables_initializer()
-init = tf.initialize_all_variables()
-sess.run(init)
+
 for i in range(1001):
     batch = mnist.train.next_batch(batchSize)
     sess.run(train_step, feed_dict={x:batch[0],true_y:batch[1], keep_prob:0.5})
@@ -69,4 +158,5 @@ imageToUse = mnist.test.images[0]
 getActivations(hidden_1,imageToUse,1)
 getActivations(hidden_2,imageToUse,2)
 getActivations(hidden_3,imageToUse,3)
+'''
 
