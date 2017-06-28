@@ -125,8 +125,8 @@ def plotNNFilter(units,layer_number,label):
 	n_rows = int(math.ceil(filters / n_columns) + 1)
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 
-	plt.figure(1, figsize=(n_rows,n_columns))
-	gs1 = gridspec.GridSpec(n_rows, n_columns)
+	plt.figure(1, figsize=(n_columns,n_rows))
+	gs1 = gridspec.GridSpec(n_columns,n_rows)
 	gs1.update(wspace=0.5, hspace=0.5) # set the spacing between axes. 
 
 
