@@ -234,8 +234,10 @@ print("Label " + str(label))
 img_path = "/media/tensorflow/coffee/output/filters/image_label_" + str(label) + ".png"
 scipy.misc.imsave(img_path, patch)
 
-batch_x = [patch]
-batch_y = [label]
+batch_x = []
+batch_y = []
+batch_x.append(patch)
+batch_y.append(label)
 
 NUM_CLASSES = 2
 n_input = 41*41*3 
