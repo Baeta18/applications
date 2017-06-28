@@ -213,6 +213,7 @@ x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_training = tf.placeholder(tf.bool, [], name='is_training')
+dropout = 0.5 # Dropout, probability to keep units
 
 
 x = tf.reshape(x, shape=[-1, 41, 41, 3]) ## default: 25x25
