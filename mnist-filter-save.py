@@ -62,7 +62,7 @@ def plotNNFilter(units,layer_number):
 
 
 tf.reset_default_graph()
-
+outputPath = "/media/tensorflow/coffee/output/"
 mean_file = outputPath + "/mean_std/4_mean_full.npy"
 std_file = outputPath + "/mean_std/4_std_full.npy"	
 
