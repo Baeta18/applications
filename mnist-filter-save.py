@@ -117,7 +117,7 @@ def loadImages(dataPath, instances, cropSize,type):
 def getActivations(layer,stimuli,layer_number):
 	input_data = tf.reshape(stimuli, shape=[-1, 41, 41, 3]) ## default: 25x25
 	units = sess.run(layer,feed_dict={x:input_data,keep_prob:1.0})
-    plotNNFilter(units,layer_number)
+	plotNNFilter(units,layer_number)
 
 def plotNNFilter(units,layer_number):
     #filters = units.shape[3]
