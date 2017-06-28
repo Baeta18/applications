@@ -214,9 +214,9 @@ print(trainMask.shape)
 #patch = img[470:511,130:171,:]
 #label = mask[500][150]
 
-patch = img[80:121,80:121,:]
-label = retrieveClass(mask[100][100])
-print("Label " + label)
+patch = img[480:521,480:521,:]
+label = retrieveClass(mask[500][500])
+print("Label " + str(label))
 
 
 
