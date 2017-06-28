@@ -204,9 +204,9 @@ batch_x = []
 batch_y = []
 batch_y.append(mask[10][10])
 batch_x.append(img[0:41,0:41,:])
-print(batch_x[0].shape)
 
-'''
+
+
 NUM_CLASSES = 2
 n_input = 41*41*3 
 weightDecay = 0.005
@@ -262,7 +262,7 @@ saver.restore(sess, model_path)
 
 testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.0})
 print("test accuracy %g"%(testAccuracy))
-'''
+
 
 
 '''
