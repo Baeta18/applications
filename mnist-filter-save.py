@@ -143,6 +143,11 @@ trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["9_6"], 41
 print("Loading mean and std")
 mean_full = np.load(mean_file)
 std_full = np.load(std_file)
+
+print("Data shape")
+print(trainData.shape)
+print("Mask shape")
+print(trainMask.shape)
 '''
 weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
