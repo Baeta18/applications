@@ -120,7 +120,7 @@ def loadImages(dataPath, instances, cropSize,type):
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
 	plt.figure(1, figsize=(20,20))
-	n_columns = 12
+	n_columns = 20
 	n_rows = math.ceil(filters / n_columns) + 1
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 	for i in range(filters):
