@@ -120,12 +120,13 @@ def loadImages(dataPath, instances, cropSize,type):
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
 	plt.figure(1, figsize=(20,20))
-	plt.tight_layout()
+
 	n_columns = 20
 	n_rows = math.ceil(filters / n_columns) + 1
 	print("Total columns " + str(n_columns) + " rows " + str(n_rows))
 	for i in range(filters):
 		plt.subplot(n_rows, n_columns, i+1)
+		plt.tight_layout()
 		#plt.title('Filter ' + str(i))
 		plt.axis('off')
 		plt.subplots_adjust(hspace=0.1)
