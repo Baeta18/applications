@@ -264,16 +264,16 @@ print("test accuracy %g"%(testAccuracy))
 
 
 units = sess.run(conv1,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,layer_number)
+plotNNFilter(units,1)
 
 units = sess.run(conv2,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,layer_number)
+plotNNFilter(units,2)
 
 units = sess.run(conv3,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,layer_number)
+plotNNFilter(units,3)
 
 units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,layer_number)
+plotNNFilter(units,4)
 
 
 
