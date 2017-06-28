@@ -115,7 +115,7 @@ def loadImages(dataPath, instances, cropSize,type):
                 return np.asarray(images), np.asarray(masks)
 
 def getActivations(layer,stimuli,layer_number):
-    units = sess.run(layer,feed_dict={x:np.reshape(stimuli,[1,5043],order='F'),keep_prob:1.0})
+    units = sess.run(layer,feed_dict={x:stimuli,keep_prob:1.0})
     plotNNFilter(units,layer_number)
 
 def plotNNFilter(units,layer_number):
@@ -264,10 +264,10 @@ testAccuracy = sess.run(acc_mean, feed_dict={x:batch_x,y:batch_y, keep_prob:1.,i
 
 print("test accuracy %g"%(testAccuracy))
 
-getActivations(conv1,patch,1)
-getActivations(conv2,patch,2)
-getActivations(conv3,patch,3)
-getActivations(conv4,patch,4)
+getActivations(conv1,batch_x,1)
+getActivations(conv2,batch_x,2)
+getActivations(conv3,batch_x,3)
+getActivations(conv4,batch_x,4)
 
 '''
 print("Load dataset")
