@@ -119,8 +119,8 @@ def loadImages(dataPath, instances, cropSize,type):
 
 def plotNNFilter(units,layer_number,label):
     #filters = units.shape[3]
-    filters = 20
-    plt.figure(1, figsize=(20,20))
+    filters = 6
+    #plt.figure(1, figsize=(20,20))
     n_columns = 6
     n_rows = math.ceil(filters / n_columns) + 1
     print("Total columns " + str(n_columns) + " rows " + str(n_rows))
@@ -133,7 +133,7 @@ def plotNNFilter(units,layer_number,label):
 		fig.add_axes(ax)
 		plt.imshow(units[0,:,:,i],interpolation="nearest")
 		separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
-		plt.savefig(separeted_path)
+		plt.savefig(separeted_path,dpi = 200)
 		plt.close()
 
     filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
