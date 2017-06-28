@@ -116,7 +116,7 @@ def loadImages(dataPath, instances, cropSize,type):
 
 
 
-def plotNNFilter(units,layer_number):
+def plotNNFilter(units,layer_number,label):
     #filters = units.shape[3]
     filters = 20
     plt.figure(1, figsize=(20,20))
@@ -128,7 +128,7 @@ def plotNNFilter(units,layer_number):
         plt.title('Filter ' + str(i))
         plt.imshow(units[0,:,:,i],interpolation="nearest")
 
-    filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + ".png"
+    filter_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + ".png"
     print("Saving image at: " + filter_path)
     plt.savefig(filter_path)
 
@@ -202,10 +202,7 @@ print(trainMask.shape)
 patch = img[470:511,130:171,:]
 label = mask[500][150]
 
-print(patch.shape)
-print(mask[500][150])
 
-'''
 batch_x = [patch]
 batch_y = [label]
 
@@ -269,17 +266,18 @@ print("test accuracy %g"%(testAccuracy))
 
 
 units = sess.run(conv1,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,1)
+#units,layer,label
+plotNNFilter(units,1,1)
 
 units = sess.run(conv2,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,2)
+plotNNFilter(units,2,1)
 
 units = sess.run(conv3,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,3)
+plotNNFilter(units,3,1)
 
 units = sess.run(conv4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
-plotNNFilter(units,4)
-'''
+plotNNFilter(units,4,1)
+
 
 
 '''
