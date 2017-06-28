@@ -200,8 +200,13 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
-patch = img[470:511,130:171,:]
-label = mask[500][150]
+#patch = img[470:511,130:171,:]
+#label = mask[500][150]
+
+patch = img[80:121,80:121,:]
+label = mask[100][100]
+print(label)
+
 
 img_path = "/media/tensorflow/coffee/output/filters/image_label_" + str(label) + ".png"
 scipy.misc.imsave(img_path, patch)
