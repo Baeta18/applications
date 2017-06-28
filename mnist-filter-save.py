@@ -121,7 +121,7 @@ def plotNNFilter(units,layer_number,label):
     filters = units.shape[3]
     #filters = 6
     plt.figure(1, figsize=(20,20))
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
+	ax = plt.Axes(fig, [0., 0., 1., 1.])
 	ax.set_axis_off()
     n_columns = 12
     n_rows = math.ceil(filters / n_columns) + 1
