@@ -161,7 +161,7 @@ batch_x.append(img[0:40,0:40,:])
 
 
 
-
+n_input = 41*41*3 
 weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
