@@ -8,6 +8,7 @@ import input_data
 from PIL import Image, ImageOps
 import math
 from skimage import img_as_float
+import scipy.misc
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.2)
 
@@ -202,6 +203,8 @@ print(trainMask.shape)
 patch = img[470:511,130:171,:]
 label = mask[500][150]
 
+img_path = "/media/tensorflow/coffee/output/filters/image_label_" + str(label) + ".png"
+scipy.misc.imsave(img_path, patch)
 
 batch_x = [patch]
 batch_y = [label]
