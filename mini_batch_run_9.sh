@@ -23,6 +23,3 @@ python /media/tensorflow/coffee/applications/mini_batch_subimages_6x3.py /media/
 #10
 #python /media/tensorflow/coffee/applications/mini_batch_subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 7_5,8_7,9_6,8_5,8_6,9_5 7_7 9_7,7_7,7_6 41 0.001 0.005 250 0 5 1 10 0 0 4
 
-
-4_model_6x3_4_blocks_41_9_6_9_7_7_5_7_7_8_5_7_6_final
-
