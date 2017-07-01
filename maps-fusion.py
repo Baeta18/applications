@@ -142,7 +142,7 @@ def main():
 			print("Loading file: " + probFile)
 			probsData.append(np.load(probFile))
 
-	generateFusion(outputPath,instance,fusionInstances,probsData,3)
+	generateFusion(groundPath,outputPath,instance,fusionInstances,probsData,3)
 
 
 
