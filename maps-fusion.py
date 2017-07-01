@@ -62,7 +62,8 @@ def main():
 	probsData = []
 
 	for i in fusionInstances:
-		probFile = str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
+		probFile = outputPath + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
+		print("Loading file: " + probFile)
 		probsData.append(np.load(probFile))
 
 	print(len(probsData))
