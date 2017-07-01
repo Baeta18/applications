@@ -21,6 +21,9 @@ from sklearn.metrics import jaccard_similarity_score
 from skimage import img_as_float
 
 
+def generateFusion(data):
+	aux = data[0]
+	print(aux.shape)
 
 def printParams(listParams):
 	print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
@@ -66,7 +69,7 @@ def main():
 		print("Loading file: " + probFile)
 		probsData.append(np.load(probFile))
 
-	print(len(probsData))
+
 
 
 if __name__ == "__main__":
