@@ -67,9 +67,8 @@ def main():
 
 	#training images path
 	index = 1
-	#dataPath = sys.argv[index]
-	dataPath = ""
-
+	dataPath = sys.argv[index]
+	
 	#output path
 	index = index + 1
 	outputPath = sys.argv[index]
