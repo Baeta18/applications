@@ -43,6 +43,10 @@ def main():
 	index = index + 1
 	outputPath = sys.argv[index]
 
+	#output path
+	index = index + 1
+	instance = sys.argv[index]
+
 	#fusin instances
 	index = index + 1
 	fusionInstances = sys.argv[index].split(',')
