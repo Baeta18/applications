@@ -13,9 +13,48 @@ from PIL import Image, ImageOps
 from os import listdir
 from sklearn.metrics import cohen_kappa_score
 
+def read_image_P2_int16(filename):
+	fp = open(filename,"r")
+
+	# Read the type of PGM
+	magic_number = (fp.readline()).split()
+
+	if magic_number[0] != "P2":
+		print "This is not a P2 image"
+		return 0
+		
+	# Search for comments
+	info = (fp.readline()).split()
+	if info[0].startswith('#'):
+		#print info
+		info = fp.readline().split()
+
+	# Read Width and Height
+	width  = int(info[0])
+	height = int(info[1])
+	#print width, height
+
+	# Read the Max Grey Level
+	max_gray_level = (fp.readline()).split()
+	#print max_gray_level
+
+	# END THE HEADER
+
+	#Create New Array
+	img = np.empty([height, width],dtype="uint8") #row,column 
+
+	#Save Image in Numpy Array
+	for row in xrange(height):
+		for column in xrange(width):
+			raw = fp.readline()
+			img[row][column] = raw
+
+	##print np.bincount(img.astype(int).flatten())
+	return img
+
 
 #x,y,prob-class0,prob-class1
-def generateFusion(outputPath,instance,fusionInstances,data,crops):
+def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 	print("Generate fusion")
 	imageCont = 0
 
@@ -24,8 +63,10 @@ def generateFusion(outputPath,instance,fusionInstances,data,crops):
 
 	for i in xrange(0,len(data),crops):
 		print("Predicting image " + fusionInstances[imageCont])
+		groundFile = groundPath + fusionInstances[imageCont] + "/mascara.pgm"
+		print("Loading ground " + groundFile)
 		fusion_map = np.zeros((tam,tam))
-
+		#mask = read_image_P2_int16(groundFile)
 
 		for j in xrange(1000000):
 			posY = int(data[i][j][0])
@@ -62,11 +103,15 @@ def printParams(listParams):
 def main():
 
 
-	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'instance', 'fusion-instances','cropSize','fusion-type']
+	listParams = ['groundPath', 'dataPath', 'outputPath(for model, images, etc)', 'instance', 'fusion-instances','cropSize','fusion-type']
 	printParams(listParams)
 
 	#training images path
 	index = 1
+	groundPath = sys.argv[index]
+
+	#training images path
+	index = index + 1
 	dataPath = sys.argv[index]
 	
 	#output path
