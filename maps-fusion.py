@@ -66,7 +66,9 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 		groundFile = groundPath + fusionInstances[imageCont] + "/mascara.pgm"
 		print("Loading ground " + groundFile)
 		fusion_map = np.zeros((tam,tam))
-		#mask = read_image_P2_int16(groundFile)
+		mask = read_image_P2_int16(groundFile)
+		predicts = np.zeros(1000000)
+		grounds = np.zeros(1000000)
 
 		for j in xrange(1000000):
 			posY = int(data[i][j][0])
@@ -83,8 +85,12 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 			else:
 				prediction = 1
 
+			grounds[j] = mask[posY][posX]
+			predicts[j] = prediction			
 			fusion_map[posY][posX] = prediction
 
+		cur_kappa = cohen_kappa_score(grounds, predicts)
+		print("Kappa " + str(cur_kappa))
 		fusionFile =  outputPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
 		print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
