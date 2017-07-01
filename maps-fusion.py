@@ -20,10 +20,10 @@ from sklearn.metrics import cohen_kappa_score
 from sklearn.metrics import jaccard_similarity_score
 from skimage import img_as_float
 
-
+#x,y,prob-class0,prob-class1
 def generateFusion(data):
 	aux = data[0]
-	print(aux.shape)
+	print(aux[0])
 
 def printParams(listParams):
 	print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
