@@ -60,9 +60,10 @@ def main():
 	fusion_type = int(sys.argv[index])
 
 	probsData = []
-
-	for instance in fusionInstances:
-		print(instance)
+	
+	for i in fusionInstances:
+		probFile = str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
+		print(probFile)
 
 
 
