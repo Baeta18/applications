@@ -32,7 +32,7 @@ def printParams(listParams):
 def main():
 
 
-	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'fusion-instances','cropSize','fusion-type']
+	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'instance', 'fusion-instances','cropSize','fusion-type']
 	printParams(listParams)
 
 	#training images path
