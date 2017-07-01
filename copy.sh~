@@ -2,7 +2,7 @@
 
 #scp -r rafaelbaeta@glcm.vpr.dcc.ufmg.br:/mnt/hdd/baeta/tensorflow/coffee/output/filters/ /home/baeta/Documentos/patreo/datasets/montesanto
 
-scp -r rafaelbaeta@glcm.vpr.dcc.ufmg.br:/mnt/hdd/baeta/tensorflow/coffee/output/probability/ /home/baeta/Documentos/patreo/datasets/montesanto
+scp -r rafaelbaeta@glcm.vpr.dcc.ufmg.br:/mnt/hdd/baeta/tensorflow/coffee/output/results/probability/ /home/baeta/Documentos/patreo/datasets/montesanto
 
 #scp rafaelbaeta@glcm.vpr.dcc.ufmg.br:/mnt/hdd/baeta/tensorflow/coffee/output/filters/image_label_1.png /home/baeta/Documentos/patreo/datasets/montesanto
 #scp rafaelbaeta@glcm.vpr.dcc.ufmg.br:/mnt/hdd/baeta/tensorflow/coffee/output/filters/weights_layer_1_label_1.png /home/baeta/Documentos/patreo/datasets/montesanto

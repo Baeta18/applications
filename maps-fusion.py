@@ -15,7 +15,7 @@ from sklearn.metrics import cohen_kappa_score
 
 
 #x,y,prob-class0,prob-class1
-def generateFusion(fusionInstances,data,crops):
+def generateFusion(instance,fusionInstances,data,crops):
 	print("Generate fusion")
 	imageCont = 0
 
@@ -44,7 +44,7 @@ def generateFusion(fusionInstances,data,crops):
 
 			fusion_map[posY][posX] = prediction
 
-		fusionFile = "fusion_" + fusionInstances[imageCont] + ".png"
+		fusionFile =  str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
 		print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
 
@@ -98,7 +98,7 @@ def main():
 			print("Loading file: " + probFile)
 			probsData.append(np.load(probFile))
 
-	generateFusion(fusionInstances,probsData,3)
+	generateFusion(instance,fusionInstances,probsData,3)
 
 
 
