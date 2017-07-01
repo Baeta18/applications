@@ -85,7 +85,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 			else:
 				prediction = 1
 
-			grounds[j] = mask[posY][posX]
+			grounds[j] = mask[posY][posX] if mask[posY][posX] == 0 else 1
 			predicts[j] = prediction			
 			fusion_map[posY][posX] = prediction
 
