@@ -60,11 +60,12 @@ def main():
 	fusion_type = int(sys.argv[index])
 
 	probsData = []
-	
+
 	for i in fusionInstances:
 		probFile = str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
-		print(probFile)
+		probsData.append(np.load(probFile))
 
+	print(len(probsData))
 
 
 if __name__ == "__main__":
