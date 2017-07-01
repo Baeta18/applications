@@ -26,8 +26,8 @@ def generateFusion(data):
 	aux1 = data[1]
 	aux2 = data[2]
 	print(aux[0])
-	print(aux[1])
-	print(aux[2])
+	print(aux1[0])
+	print(aux2[0])
 
 def printParams(listParams):
 	print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
