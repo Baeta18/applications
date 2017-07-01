@@ -25,7 +25,7 @@ def generateFusion(data):
 	aux = data[0]
 	aux1 = data[1]
 	aux2 = data[2]
-	print(aux.shape[1])
+	print(aux.shape[0])
 	#for i in xrange()
 	print(aux[0])
 	print(aux1[0])
