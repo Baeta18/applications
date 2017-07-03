@@ -120,7 +120,7 @@ def loadImages(dataPath, instances, cropSize,type):
 
 def plotNNFilter(units,layer_number,label):
 	filters = units.shape[3]
-	n_columns = 10
+	n_columns = 15
 	n_rows = 20
 	plt.figure(1, figsize=(n_rows,n_columns))
 	gs1 = gridspec.GridSpec(n_rows, n_columns)
