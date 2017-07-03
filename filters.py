@@ -124,7 +124,7 @@ def plotNNFilter(units,layer_number,label):
 	n_rows = 22
 	plt.figure(1, figsize=(n_rows,n_columns))
 	gs1 = gridspec.GridSpec(n_rows, n_columns)
-	gs1.update(wspace=0.5, hspace=0.5) # set the spacing between axes. 
+	gs1.update(wspace=0.2, hspace=0.2) # set the spacing between axes. 
 
 	
 	n_rows = math.ceil(filters / n_columns) + 1
