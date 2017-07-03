@@ -134,7 +134,7 @@ def plotNNFilter(units,layer_number,label):
 		plt.subplot(gs1[i])
 		#plt.title('Filter ' + str(i))
 		plt.axis('off')
-		plt.imshow(units[0,:,:,i],interpolation="nearest")
+		plt.imshow(units[0,:,:,i],interpolation="nearest",dpi = 50)
 		#separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
 		#plt.savefig(separeted_path,dpi = 50)
 		#plt.close()
