@@ -107,7 +107,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 
 		imageCont += 1
 	result.close()
-	'''
+
 
 
 def printParams(listParams):
