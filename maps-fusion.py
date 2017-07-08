@@ -63,12 +63,13 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
-                #os.makedirs(resultPath)
+                os.makedirs(resultPath)
 
-	'''
+	
 	print("Opening file")
-	result = open(outputPath + "result.txt",'a')
+	result = open(resultPath + "result.txt",'a')
 
+	
 	for i in xrange(0,len(data),crops):
 		print("Predicting image " + fusionInstances[imageCont])
 		groundFile = groundPath + fusionInstances[imageCont] + "/mascara.pgm"
@@ -100,13 +101,13 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 		cur_kappa = cohen_kappa_score(grounds, predicts)
 		print("Kappa " + str(cur_kappa))
 		result.write(str(instance) + "_" + fusionInstances[imageCont] + ": " + str(cur_kappa) + "\n")
-		fusionFile =  outputPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
+		fusionFile =  resultPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
 		print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
 
 		imageCont += 1
 	result.close()
-	'''
+
 
 
 def printParams(listParams):
