@@ -57,7 +57,7 @@ def read_image_P2_int16(filename):
 def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 	print("Generate fusion")
 	imageCont = 0
-	acc = 0
+	
 	tam= int(math.sqrt(data[0].shape[0]))
 	resultPath = outputPath + str(instance) + "_instance/"
 
@@ -78,7 +78,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 		mask = read_image_P2_int16(groundFile)
 		predicts = np.zeros(1000000)
 		grounds = np.zeros(1000000)
-
+		acc = 0
 		for j in xrange(1000000):
 			posY = int(data[i][j][0])
 			posX = int(data[i][j][1])
@@ -97,7 +97,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 			grounds[j] = mask[posY][posX] if mask[posY][posX] == 0 else 1
 			predicts[j] = prediction			
 			fusion_map[posY][posX] = prediction
-			if(grounds[j] == predicts[j])
+			if(grounds[j] == predicts[j]):
 				acc += 1
 
 		cur_kappa = cohen_kappa_score(grounds, predicts)
