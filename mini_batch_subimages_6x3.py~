@@ -834,8 +834,8 @@ def convNet_ICPR_41_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	print(pool4.get_shape())
 
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool4, [-1, 1*1*312])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		reshape = tf.reshape(pool4, [-1, 2*2*312])
+		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
@@ -1709,12 +1709,12 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
 			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)
-			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + '_iteration_'+str(countIter)
+			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + '_iteration_'+str(countIter)
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
 		predictionPath = resultPath + "/prediction-final"
-		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_final"
+		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" +  str(cropSize) + "_final"
 	
 
 	

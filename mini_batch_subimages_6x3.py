@@ -1709,12 +1709,12 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
 			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)
-			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + '_iteration_'+str(countIter)
+			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + '_iteration_'+str(countIter)
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
 		predictionPath = resultPath + "/prediction-final"
-		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(cropSize) + "_final"
+		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" +  str(cropSize) + "_final"
 	
 
 	
