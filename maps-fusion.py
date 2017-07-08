@@ -59,7 +59,12 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 	imageCont = 0
 	
 	tam= int(math.sqrt(data[0].shape[0]))
-	print(outputPath)
+	resultPath = outputPath + str(instance) + "_instance/"
+
+	if os.path.exists(resultPath) != True:
+		print("Creating folder: " + resultPath)
+                #os.makedirs(resultPath)
+
 	'''
 	print("Opening file")
 	result = open(outputPath + "result.txt",'a')
