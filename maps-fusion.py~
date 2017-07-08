@@ -57,10 +57,10 @@ def read_image_P2_int16(filename):
 def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 	print("Generate fusion")
 	imageCont = 0
-
+	
 	tam= int(math.sqrt(data[0].shape[0]))
-
-
+	print(outputPath)
+	'''
 	print("Opening file")
 	result = open(outputPath + "result.txt",'a')
 
@@ -101,6 +101,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 
 		imageCont += 1
 	result.close()
+	'''
 
 
 def printParams(listParams):
