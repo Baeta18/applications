@@ -150,7 +150,7 @@ def main():
 
 	for i in fusionInstances:
 		for cropSize in cropSizes: 
-			print(cropSize)
+			print(cropSize == 25)
 			if(cropSize == 25):
 				probFile = dataPath + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
 			else:
