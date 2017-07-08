@@ -97,7 +97,7 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 			grounds[j] = mask[posY][posX] if mask[posY][posX] == 0 else 1
 			predicts[j] = prediction			
 			fusion_map[posY][posX] = prediction
-			if(grounds[j] == predicts[j])
+			if(grounds[j] == predicts[j]):
 				acc += 1
 
 		cur_kappa = cohen_kappa_score(grounds, predicts)

@@ -57,7 +57,7 @@ def read_image_P2_int16(filename):
 def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 	print("Generate fusion")
 	imageCont = 0
-	
+	acc = 0
 	tam= int(math.sqrt(data[0].shape[0]))
 	resultPath = outputPath + str(instance) + "_instance/"
 
@@ -97,10 +97,12 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 			grounds[j] = mask[posY][posX] if mask[posY][posX] == 0 else 1
 			predicts[j] = prediction			
 			fusion_map[posY][posX] = prediction
+			if(grounds[j] == predicts[j])
+				acc += 1
 
 		cur_kappa = cohen_kappa_score(grounds, predicts)
-		print("Kappa " + str(cur_kappa))
-		result.write(str(instance) + "_" + fusionInstances[imageCont] + ": " + str(cur_kappa) + "\n")
+		print("Kappa " + str(cur_kappa) + " Acc " + str(acc/len(grounds)*100) )
+		result.write(str(instance) + "_" + fusionInstances[imageCont] + ": Kappa: " + str(cur_kappa) + " Acc: " + str(acc/len(grounds)*100) + "\n")
 		fusionFile =  resultPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
 		print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
