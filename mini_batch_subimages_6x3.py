@@ -789,7 +789,7 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 
 	# Output, class prediction
 	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
