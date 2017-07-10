@@ -1139,10 +1139,10 @@ def drawGraphic(valuesFile,graphicFile):
 
 
 def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,decayParam,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=False,isFullTraining=False):                 
-
-
 	
-        path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize)
+	fully = 1024
+	
+        path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) + "_fully_" + str(fully)
 
         for name in trainInstances:
                 path = path + "_" + name
@@ -1156,7 +1156,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 	print("Epochs: " + str(epochs))
 	
 
-	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "/train/"
+	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + "/train/"
 	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
@@ -1636,8 +1636,8 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 
 	trainings = ""	
-
-        model_path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" + str(cropSize) 
+	fully = 1024
+        model_path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully)
 
         for name in trainInstances:
                 model_path = model_path + "_" + name
@@ -1653,7 +1653,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 		
 
-	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "/test/"
+	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + "/test/"
 	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
@@ -1708,19 +1708,19 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction"
-	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize)
+	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully)
 
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
 			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)
-			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + '_iteration_'+str(countIter)
+			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + '_iteration_'+str(countIter)
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
 		predictionPath = resultPath + "/prediction-final"
-		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" +  str(cropSize) + "_final"
+		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" +  str(cropSize) + "_fully_" + str(fully) + "_final"
 	
 
 	
