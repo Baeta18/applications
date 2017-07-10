@@ -729,15 +729,17 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool4, [-1, 2*2*312])
-		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		#weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		#biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[1024,1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 
 		# Apply Dropout
 		drop_fc2 = tf.nn.dropout(fc1, dropout)
@@ -745,7 +747,7 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	# Output, class prediction
 	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
@@ -839,15 +841,15 @@ def convNet_ICPR_41_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool4, [-1, 2*2*312])
-		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 
 		# Apply Dropout
 		drop_fc2 = tf.nn.dropout(fc1, dropout)
@@ -855,7 +857,7 @@ def convNet_ICPR_41_4blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	# Output, class prediction
 	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
