@@ -767,10 +767,14 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	conv3 = _conv_layer(pool2, [3,3,128,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
 	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
 
+
+		
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool3, [-1, 1*1*256])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[1*1*256, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		#weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		#biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
