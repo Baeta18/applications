@@ -760,13 +760,13 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [4,4,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
 	
-	conv2 = _conv_layer(pool1, [4,4,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	conv2 = _conv_layer(pool1, [4,4,64,256], 'ft_conv2', weightDecay, is_training, pad='VALID')
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
 	
-	conv3 = _conv_layer(pool2, [3,3,128,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	conv3 = _conv_layer(pool2, [3,3,256,312], 'ft_conv3', weightDecay, is_training, pad='VALID')
 	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
 
 
