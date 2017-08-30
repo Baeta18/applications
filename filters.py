@@ -213,12 +213,16 @@ def retrieveClass(val):
 
 	return current_class
 
+
+
+
 tf.reset_default_graph()
 outputPath = "/media/tensorflow/coffee/output/"
 mean_file = outputPath + "/mean_std/5_mean_full.npy"
 std_file = outputPath + "/mean_std/5_std_full.npy"	
+cropSize = 57
 
-trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["8_7"], 41,1)
+trainData,trainMask = loadImages("/media/tensorflow/coffee/dataset/",["8_7"], cropSize,1)
 print("Loading mean and std")
 mean_full = np.load(mean_file)
 std_full = np.load(std_file)
@@ -233,7 +237,7 @@ print("Mask shape")
 print(trainMask.shape)
 '''
 
-patch = img[180:221,180:221,:]
+patch = img[172:229,172:229,:]
 label = retrieveClass(mask[200][200])
 
 #patch = img[680:721,480:521,:]
@@ -256,7 +260,7 @@ batch_y.append(label)
 batch_y = np.asarray(batch_y)
 
 NUM_CLASSES = 2
-n_input = 57*57*3 
+n_input = cropSize*cropSize*3 
 weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
@@ -265,19 +269,92 @@ is_training = tf.placeholder(tf.bool, [], name='is_training')
 dropout = 0.5 # Dropout, probability to keep units
 
 
-x = tf.reshape(x, shape=[-1, 57,57, 3]) ## default: 25x25
-conv1 = _conv_layer(x, [5,5,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+#x = tf.reshape(x, shape=[-1, 57,57, 3]) ## default: 25x25
+#conv1 = _conv_layer(x, [5,5,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+#pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+#conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+#pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+#conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+#pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+#conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+#pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+
+#with tf.variable_scope('ft_fc1') as scope:
+#	reshape = tf.reshape(pool4, [-1, 2*2*312])
+#	weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+#	biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+#	drop_fc1 = tf.nn.dropout(reshape, dropout)
+#	fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+
+# Fully connected layer 2
+#with tf.variable_scope('ft_fc2') as scope:
+#	weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+#	biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+	# Apply Dropout
+#	drop_fc2 = tf.nn.dropout(fc1, dropout)
+#	fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+# Output, class prediction
+#with tf.variable_scope('ft_fc3_logits') as scope:
+#	weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+#	biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+#	logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+
+x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+#print x.get_shape()
+
+conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+print("conv shape")
+print(conv1.get_shape())
+
 pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+print("pool shape")	
+print(pool1.get_shape())
+
+conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+print("conv shape")
+print(conv2.get_shape())
+
 pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+print("pool shape")
+print(pool2.get_shape())
+
+
 conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+print("conv shape")
+print(conv3.get_shape())
+
+
 pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+print("pool shape")	
+print(pool3.get_shape())
+
+
 conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+print("conv shape")
+print(conv4.get_shape())
+
+
 pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+print("pool shape")
+print(pool4.get_shape())
+
+conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+print("conv shape")
+print(conv5.get_shape())
+
+
+pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
+print("pool shape")
+print(pool5.get_shape())
+
+
 
 with tf.variable_scope('ft_fc1') as scope:
-	reshape = tf.reshape(pool4, [-1, 2*2*312])
-	weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+	reshape = tf.reshape(pool5, [-1, 1*1*376])
+	weights = _variable_with_weight_decay('weights', shape=[1*1*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 	biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 	drop_fc1 = tf.nn.dropout(reshape, dropout)
 	fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
@@ -297,13 +374,12 @@ with tf.variable_scope('ft_fc3_logits') as scope:
 	biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 	logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
-
 correct = tf.nn.in_top_k(logits, y, 1)
 # Return the number of true entries
 acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
 
 
-model_path = "/media/tensorflow/coffee/output/models/5_model_6x3_4_blocks_41_8_7_8_5_9_5_7_5_7_7_8_6_final"
+model_path = "/media/tensorflow/coffee/output/models/5_model_6x3_5_blocks_57_8_7_8_5_9_5_7_5_7_7_8_6_final"
 saver = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft')])
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 saver.restore(sess, model_path)
@@ -332,6 +408,11 @@ plotNNFilter(units,4,label)
 units = sess.run(pool4,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
 plotNNFilter(units,5,label)
 
+units = sess.run(conv5,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,6,label)
+
+units = sess.run(pool5,feed_dict={x:batch_x,keep_prob:1.0,is_training: False})
+plotNNFilter(units,7,label)
 
 
 '''
