@@ -256,7 +256,7 @@ batch_y.append(label)
 batch_y = np.asarray(batch_y)
 
 NUM_CLASSES = 2
-n_input = 41*41*3 
+n_input = 57*57*3 
 weightDecay = 0.005
 x = tf.placeholder(tf.float32, [None, n_input])
 y = tf.placeholder(tf.int32, [None])
@@ -265,7 +265,7 @@ is_training = tf.placeholder(tf.bool, [], name='is_training')
 dropout = 0.5 # Dropout, probability to keep units
 
 
-x = tf.reshape(x, shape=[-1, 41, 41, 3]) ## default: 25x25
+x = tf.reshape(x, shape=[-1, 57,57, 3]) ## default: 25x25
 conv1 = _conv_layer(x, [5,5,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
 pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
 conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')

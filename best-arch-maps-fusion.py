@@ -55,18 +55,18 @@ def read_image_P2_int16(filename):
 
 #x,y,prob-class0,prob-class1
 def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
-	print("Generate fusion")
+	#print("Generate fusion")
 	imageCont = 0
 	
 	tam= int(math.sqrt(data[0].shape[0]))
 	resultPath = outputPath + str(instance) + "_instance/"
 
 	if os.path.exists(resultPath) != True:
-		print("Creating folder: " + resultPath)
+		#print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
 
 	
-	print("Opening file")
+	#print("Opening file")
 	result = open(resultPath + "result.txt",'a')
 
 	
@@ -101,9 +101,9 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 				acc += 1
 
 		cur_kappa = cohen_kappa_score(grounds, predicts)
-		print("Kappa " + str(cur_kappa) + " Acc " + str(acc/len(grounds)*100) )
+		print(str(acc/len(grounds)) + ";" + str(cur_kappa) )
 		result.write(str(instance) + "_" + fusionInstances[imageCont] + ": Kappa: " + str(cur_kappa) + " Acc: " + str(acc/len(grounds)*100) + "\n")
-		fusionFile =  resultPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
+		fusionFile =  resultPath + str(instance) + "_fusion_best_" + fusionInstances[imageCont] + ".png"
 		print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
 
@@ -154,19 +154,23 @@ def main():
 	fusion_type = int(sys.argv[index])
 
 	probsData = []
+	numProbs = 0
 	
-
 	for i in fusionInstances:
 		for cropSize in cropSizes: 
 		
 			#if(cropSize == str(25)):
 			#	probFile = dataPath + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
 			#else:
-			probFile = dataPath + "fused/" + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 			
+
+			if(int(cropSize) == 33 or int(cropSize) == 41):
+				probFile = dataPath + "fused/" + str(instance) + "_probs_4_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
+			else:
+				probFile = dataPath + "fused/" + str(instance) + "_probs_5_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
 			print("Loading file: " + probFile)
 			probsData.append(np.load(probFile))
-
-	generateFusion(groundPath,outputPath,instance,fusionInstances,probsData,3)
+			numProbs += 1
+	generateFusion(groundPath,outputPath,instance,fusionInstances,probsData,(numProbs/len(fusionInstances)))
 
 
 

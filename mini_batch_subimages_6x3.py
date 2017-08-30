@@ -28,7 +28,7 @@ from matplotlib.mlab import PCA as mlabPCA
 from matplotlib import pyplot as plt
 NUM_CLASSES = 2
 TEST_STR = ""
-gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
+#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.33)
 
 
 class bcolors:
@@ -260,10 +260,12 @@ def loadImages(dataPath, instances, cropSize,type):
         else:
                 return np.asarray(images), np.asarray(masks)
 
-def createDistributionsOverClasses(maskData, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=False):
+def createDistributionsOverClasses(maskData, cropSize,isPurityNeeded=False, limitProcess=False, isDebug=False):
 	mask = int(cropSize/2)
 	classes = [[[] for i in range(0)] for i in range(NUM_CLASSES)]
 	purityIndexes = [[[] for i in range(0)] for i in range(NUM_CLASSES)]
+        auxClasses = [[[] for j in range(0)] for j in range(NUM_CLASSES)]
+
 	off,h,w = maskData.shape
 	total_pixel_amount = cropSize*cropSize
 	count = 2*[0]
@@ -289,10 +291,14 @@ def createDistributionsOverClasses(maskData, cropSize, isPurityNeeded=False, lim
 								print 'Pure Class ', str(i), str(len(purityIndexes[i]))
 						return classes, purityIndexes
 
+	
+	
+
 	if isDebug == True:
 		for i in xrange(len(classes)):
 			print 'Class ' + str(i) + ':: ' + str(len(classes[i])) + " == " + str(count[i])
 			print 'Pure Class ' + str(i) + ':: ' + str(len(purityIndexes[i]))  + " == " + str(pure[i])
+
 
 	return classes, purityIndexes
 
@@ -582,6 +588,63 @@ def convNet_ICPR_11(x, dropout, is_training, cropSize, weightDecay):
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
 	return fc2, logits
+
+
+
+def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	print("Conv")
+	print(conv1.get_shape())
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("pool")
+	print(pool1.get_shape())
+
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	print("Conv")
+	print(conv2.get_shape())
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
+	print("pool")
+	print(pool2.get_shape())
+
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	print("Conv")
+	print(conv3.get_shape())
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
+	print("pool")
+	print(pool3.get_shape())
+
+
+	
+
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool3, [-1, 1*1*256])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*256,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+'''
 	
 def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
@@ -636,6 +699,9 @@ def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 
 	return fc2, logits
 
+'''
+
+
 def convNet_ICPR_33_3blocks(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
@@ -667,71 +733,7 @@ def convNet_ICPR_33_3blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool3, [-1, 1*1*256])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*256, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
-	
-	# Fully connected layer 2
-	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-
-		# Apply Dropout
-		drop_fc2 = tf.nn.dropout(fc1, dropout)
-		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
-
-	# Output, class prediction
-	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
-		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
-
-	return fc2, logits
-
-
-def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
-	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
-	#print x.get_shape()
-	
-	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='SAME')
-	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	print("Conv")
-	print(conv1.get_shape())
-	print("Pool")
-	print(pool1.get_shape())
-
-	
-	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='SAME')
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	print("Conv")
-	print(conv2.get_shape())
-	print("Pool")
-	print(pool2.get_shape())
-
-	
-	conv3 = _conv_layer(pool2, [3,3,128,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
-	print("Conv")
-	print(conv3.get_shape())
-	print("Pool")
-	print(pool3.get_shape())
-
-	
-	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
-	print("Conv")
-	print(conv4.get_shape())
-	print("Pool")
-	print(pool4.get_shape())
-
-
-	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool4, [-1, 2*2*312])
-		#weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		#biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
@@ -754,35 +756,55 @@ def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	return fc2, logits
 
 
-
-def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
+def convNet_ICPR_33_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("Conv")
+	print(conv1.get_shape())
+	print("Pool")
+	print(pool1.get_shape())
+
 	
-	conv2 = _conv_layer(pool1, [4,4,128,256], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	print("Conv")
+	print(conv2.get_shape())
+	print("Pool")
+	print(pool2.get_shape())
+
 	
-	conv3 = _conv_layer(pool2, [3,3,256,312], 'ft_conv3', weightDecay, is_training, pad='VALID')
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("Conv")
+	print(conv3.get_shape())
+	print("Pool")
+	print(pool3.get_shape())
+
+	
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+	print("Conv")
+	print(conv4.get_shape())
+	print("Pool")
+	print(pool4.get_shape())
 
 
-		
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool3, [-1, 1*1*312])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		reshape = tf.reshape(pool4, [-1, 2*2*312])
+		#weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		#biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		weights = _variable_with_weight_decay('weights', shape=[2*2*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-		#weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		#biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
 	
 	# Fully connected layer 2
 	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 
 		# Apply Dropout
@@ -792,6 +814,50 @@ def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
 	# Output, class prediction
 	with tf.variable_scope('ft_fc3_logits') as scope:
 		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+
+
+def convNet_ICPR_25(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [4,4,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	
+	conv2 = _conv_layer(pool1, [4,4,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	
+	conv3 = _conv_layer(pool2, [3,3,128,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
+
+
+		
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool3, [-1, 1*1*256])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*256,1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
+		#weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		#biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[1024,1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
@@ -929,46 +995,46 @@ def convNet_ICPR_41_3blocks(x, dropout, is_training, cropSize, weightDecay):
 
 	return fc2, logits
 
-def convNet_ICPR_45(x, dropout, is_training, cropSize, weightDecay):
+def convNet_ICPR_49_4blocks(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv1.get_shape())
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	print("conv shape")
+	print(conv1.get_shape())
 
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	#print("pool shape")	
-	#print(pool1.get_shape())
+	print("pool shape")	
+	print(pool1.get_shape())
 
-	conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv2.get_shape())
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	print("conv shape")
+	print(conv2.get_shape())
 
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	#print("pool shape")
-	#print(pool2.get_shape())
+	print("pool shape")
+	print(pool2.get_shape())
 	
 	
-	conv3 = _conv_layer(pool2, [4,4,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv3.get_shape())
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	print("conv shape")
+	print(conv3.get_shape())
 
 
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool3', pad='VALID')
-	#print("pool shape")	
-	#print(pool3.get_shape())
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("pool shape")	
+	print(pool3.get_shape())
+
+	
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='VALID')
+	print("conv shape")
+	print(conv4.get_shape())
 
 
-	conv4 = _conv_layer(pool3, [4,4,256,312], 'ft_conv4', weightDecay, is_training, pad='VALID')
-	#print("conv shape")
-	#print(conv4.get_shape())
-
-
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], stride=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
-	#print("pool shape")	
-	#print(pool4.get_shape())
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+	print("pool shape")	
+	print(pool4.get_shape())
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool4, [-1, 1*1*312])
@@ -994,12 +1060,12 @@ def convNet_ICPR_45(x, dropout, is_training, cropSize, weightDecay):
 
 	return fc2, logits
 
-def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
+def convNet_ICPR_49_5blocks(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [4,4,3,128], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
 	print("conv shape")
 	print(conv1.get_shape())
 
@@ -1007,7 +1073,7 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print("pool shape")	
 	print(pool1.get_shape())
 
-	conv2 = _conv_layer(pool1, [4,4,128,192], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
 	print("conv shape")
 	print(conv2.get_shape())
 
@@ -1016,7 +1082,241 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print(pool2.get_shape())
 	
 	
-	conv3 = _conv_layer(pool2, [4,4,192,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv3.get_shape())
+
+
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("pool shape")	
+	print(pool3.get_shape())
+
+	
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv4.get_shape())
+
+
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+	print("pool shape")	
+	print(pool4.get_shape())
+
+	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv5.get_shape())
+
+
+	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
+	print("pool shape")	
+	print(pool5.get_shape())
+
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool5, [-1, 1*1*376])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+def convNet_ICPR_49_5blocks(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv1.get_shape())
+
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("pool shape")	
+	print(pool1.get_shape())
+
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv2.get_shape())
+
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	print("pool shape")
+	print(pool2.get_shape())
+	
+	
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv3.get_shape())
+
+
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("pool shape")	
+	print(pool3.get_shape())
+
+	
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv4.get_shape())
+
+
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
+	print("pool shape")	
+	print(pool4.get_shape())
+
+	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv5.get_shape())
+
+
+	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
+	print("pool shape")	
+	print(pool5.get_shape())
+
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool5, [-1, 1*1*376])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+
+def convNet_ICPR_49_6blocks(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv1.get_shape())
+
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("pool shape")	
+	print(pool1.get_shape())
+
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv2.get_shape())
+
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	print("pool shape 3")
+	print(pool2.get_shape())
+	
+	
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+	print("conv shape 3")
+	print(conv3.get_shape())
+
+
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("pool shape 3")	
+	print(pool3.get_shape())
+
+	
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+	print("conv shape 4")
+	print(conv4.get_shape())
+
+
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
+	print("pool shape 4")	
+	print(pool4.get_shape())
+
+	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+	print("conv shape 5")
+	print(conv5.get_shape())
+
+
+	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool5', pad='VALID')
+	print("pool shape 5")	
+	print(pool5.get_shape())
+
+	conv6 = _conv_layer(pool5, [3,3,376,440], 'ft_conv6', weightDecay, is_training, pad='SAME')
+	print("conv shape 6")
+	print(conv6.get_shape())
+
+
+	pool6 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool6', pad='VALID')
+	print("pool shape 6")	
+	print(pool6.get_shape())
+
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool6, [-1, 1*1*440])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*440, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+
+
+def convNet_ICPR_57_6blocks(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv1.get_shape())
+
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("pool shape")	
+	print(pool1.get_shape())
+
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv2.get_shape())
+
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	print("pool shape")
+	print(pool2.get_shape())
+	
+	
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
 	print("conv shape")
 	print(conv3.get_shape())
 
@@ -1026,20 +1326,112 @@ def convNet_ICPR_57(x, dropout, is_training, cropSize, weightDecay):
 	print(pool3.get_shape())
 
 
-	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='VALID')
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
 	print("conv shape")
 	print(conv4.get_shape())
 
 
 	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
+	print("pool shape")	
+	print(pool4.get_shape())
+
+	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv5.get_shape())
+
+
+	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
+	print("pool shape")	
+	print(pool5.get_shape())
+
+	conv6 = _conv_layer(pool5, [3,3,376,440], 'ft_conv6', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv6.get_shape())
+
+
+	pool6 = _max_pool(conv6, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool6', pad='VALID')
+	print("pool shape")	
+	print(pool6.get_shape())
+
+	with tf.variable_scope('ft_fc1') as scope:
+		reshape = tf.reshape(pool6, [-1, 2*2*440])
+		weights = _variable_with_weight_decay('weights', shape=[2*2*440, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+		drop_fc1 = tf.nn.dropout(reshape, dropout)
+		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
+	
+	# Fully connected layer 2
+	with tf.variable_scope('ft_fc2') as scope:
+		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
+
+		# Apply Dropout
+		drop_fc2 = tf.nn.dropout(fc1, dropout)
+		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
+
+	# Output, class prediction
+	with tf.variable_scope('ft_fc3_logits') as scope:
+		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
+		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
+
+	return fc2, logits
+
+def convNet_ICPR_57_5blocks(x, dropout, is_training, cropSize, weightDecay):
+	# Reshape input picture
+	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
+	#print x.get_shape()
+	
+	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv1.get_shape())
+
+	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
+	print("pool shape")	
+	print(pool1.get_shape())
+
+	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv2.get_shape())
+
+	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
+	print("pool shape")
+	print(pool2.get_shape())
+	
+	
+	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv3.get_shape())
+
+
+	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
+	print("pool shape")	
+	print(pool3.get_shape())
+
+
+	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv4.get_shape())
+
+
+	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
 	print("pool shape")
 	print(pool4.get_shape())
+
+	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
+	print("conv shape")
+	print(conv5.get_shape())
+
+
+	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
+	print("pool shape")
+	print(pool5.get_shape())
 
 
 
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool4, [-1, 1*1*312])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*312, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		reshape = tf.reshape(pool5, [-1, 1*1*376])
+		weights = _variable_with_weight_decay('weights', shape=[1*1*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
@@ -1093,10 +1485,20 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 		else:
 			_,logits = convNet_ICPR_41_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
 
-	elif(cropSize == 45):
-		 _,logits = convNet_ICPR_45(x, keep_prob, is_training, cropSize, weightDecay)
+	elif(cropSize == 49):
+		if blocks == 4:
+		 	_,logits = convNet_ICPR_49_4blocks(x, keep_prob, is_training, cropSize, weightDecay)
+		elif blocks == 5:
+			_,logits = convNet_ICPR_49_5blocks(x, keep_prob, is_training, cropSize, weightDecay)
+		else:	
+			_,logits = convNet_ICPR_49_6blocks(x, keep_prob, is_training, cropSize, weightDecay)
+
 	elif(cropSize == 57):
-		 _,logits = convNet_ICPR_57(x, keep_prob, is_training, cropSize, weightDecay)
+		if blocks == 6:
+			_,logits = convNet_ICPR_57_6blocks(x, keep_prob, is_training, cropSize, weightDecay)
+		else:
+			_,logits = convNet_ICPR_57_5blocks(x, keep_prob, is_training, cropSize, weightDecay)
+
 	elif(cropSize == 65):
 		 _,logits = convNet_ICPR_65(x, keep_prob, is_training, cropSize, weightDecay)
 
@@ -1138,25 +1540,33 @@ def drawGraphic(valuesFile,graphicFile):
 	plt.savefig(graphicFile)
 
 
-def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,decayParam,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=False,isFullTraining=False):                 
+def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,decayParam,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useBalance,useValidation,gpuUse,keepTraining=False,isFullTraining=False):                 
+
+        path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) 
+	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize)
 	
-	fully = 1024
+	print("Number of images used to train: " + str(len(trainInstances)))
+	print("Iteration: " + str(countIter))
+	print("Epochs: " + str(epochs))
 	
-        path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) + "_fully_" + str(fully)
 
         for name in trainInstances:
                 path = path + "_" + name
 
 	if useMinibatch == 1:
 		path = path + "_minibatch"
-        
-	print("Model path: " + path)
-	print("Number of images used to train: " + str(len(trainInstances)))
-	print("Iteration: " + str(countIter))
-	print("Epochs: " + str(epochs))
-	
+		resultPath = resultPath + "_minibatch"
 
-	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + "/train/"
+	if useBalance == 1:
+		path = path + "_balanced_reduced_majority"
+		resultPath = resultPath + "_balanced_reduced_majority"
+
+	if useBalance == 2:
+		path = path + "_balanced_equal"
+		resultPath = resultPath + "_balanced_equal"
+        
+	
+	resultPath = resultPath + "/train/"
 	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
@@ -1168,6 +1578,9 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 		trainings = trainings + "-" + trainInstances[i]
 	
 	resultPath = resultPath + trainings
+
+	print("Model path: " + path)
+	print("Result path: " + resultPath)
 	
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
@@ -1177,6 +1590,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 	resultFile = resultPath + "/training-result.txt"
 	graphicFile = resultPath + "/train-validation.png"       
 
+	
 	if os.path.isfile(resultFile) != True or countIter == 0:
 		print("Creating file: " + resultFile)
        		result = open(resultFile,"w") 
@@ -1225,6 +1639,10 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 		saver = tf.train.Saver()
 		saver_restore = tf.train.Saver([k for k in tf.all_variables() if k.name.startswith('ft_')])
 
+	#if(cropSize == 57 and blocks == 6):
+	#gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
+	#else:
+	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpuUse)
 
 
 
@@ -1258,27 +1676,54 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 		batch_cm_train = np.zeros((NUM_CLASSES,NUM_CLASSES), dtype=np.uint32)
 
 		#Tem de dividir por 2 porque tiraremos metade do batchsize de uma classe e metade da outra totalizando o batchsize que queremos
-		if useMinibatch == 1:
+		if useBalance == 1 or useBalance == 2:
 			batchSize = int(batchSize/2)
 
- 		epochs =  countIter+epochs+1
+ 		epochs =  countIter+epochs
+
+		if(useBalance == 1):
+			print("Using majority reduction")
+			#Este vetor pega uma amostra aleatorio do tamanho da classe minoritaria no vetor majoritario
+			majority = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[1]))))
+			print("New majority size " + str(len(majority)))			
+		
+
                 for e in range(countIter,epochs):
                         
-                        print("Epoch: " + str(e) + " / " + str(epochs-1))
+                        print("Epoch: " + str(e+1) + " / " + str(epochs))
                  
-			if useMinibatch == 1:
+
+
+			if useBalance == 2:
 				
-				shuffleClass0 = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
-				shuffleClass1 = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+				#shuffleClass0 = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
+				#shuffleClass1 = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
 
-				majorityShuffle = shuffleClass0
-				minorityShuffle = shuffleClass1
+				#majorityShuffle = shuffleClass0
+				#minorityShuffle = shuffleClass1
 
-				if len(shuffleClass0) < len(shuffleClass1):
-					majorityShuffle = shuffleClass1
-					minorityShuffle = shuffleClass0
+				if len(classes[0]) < len(classes[1]):
+					majority_length = len(classes[1])
+					minority_length = len(classes[0])
+					majorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+					minorityShuffle = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
+
+
+				else:
+					majority_length = len(classes[0])
+					minority_length = len(classes[1])
+					majorityShuffle = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
+					minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+
 
 				step1 = 0
+				shuffleSize = majority_length
+				epoch = int(shuffleSize/batchSize*2)
+			
+			elif useBalance == 1:
+				majorityShuffle = np.asarray(random.sample(xrange(len(majority)), (len(majority))))
+				minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+				#usado quando o minority tem de ser repetido ate completar o majority step1 = 0
 				shuffleSize = len(majorityShuffle)
 				epoch = int(shuffleSize/batchSize*2)
 
@@ -1287,13 +1732,16 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 				shuffleSize = len(shuffle)
 				epoch = int(shuffleSize/batchSize)
 			
+		
 			for step in xrange(0,((shuffleSize/batchSize)+1 if shuffleSize%batchSize != 0 else (shuffleSize/batchSize))):
 
-				if useMinibatch == 1:
-					if len(shuffleClass0) < len(shuffleClass1):
-						majorityShuffle = shuffleClass1
-						minorityShuffle = shuffleClass0
+				if useBalance == 1:
+					indsMajorityClass = majorityShuffle[step*batchSize:min(step*batchSize+batchSize, len(majorityShuffle))]
+					indsMinorityClass = minorityShuffle[step*batchSize:min(step*batchSize+batchSize, len(minorityShuffle))]
+					batch_x,batch_y = createPatchesFromClassDistributionWithMinibatch(trainData, trainMask, classes, cropSize,indsMajorityClass,indsMinorityClass)
+					
 
+				elif useBalance == 2:
 					#Seleciona os indices da classe 0
 					indsMajorityClass = majorityShuffle[step*batchSize:min(step*batchSize+batchSize, len(majorityShuffle))]
 					sizeClasse1 = len(indsMajorityClass)
@@ -1302,6 +1750,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 					
 					if(len(indsMinorityClass) == 0):
 						step1 = 0
+						minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
 						indsMinorityClass = minorityShuffle[step1*sizeClasse1:min(step1*sizeClasse1+sizeClasse1, len(minorityShuffle))]
 
 					step1 += 1
@@ -1340,7 +1789,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
                			for i in xrange(len(batch_cm_train)):
 					_sum += (batch_cm_train[i][i]/float(np.sum(batch_cm_train[i])) if np.sum(batch_cm_train[i]) != 0 else 0)
 
-                                if(step%1000 == 0 and step > 0):
+                                if(step%500 == 0 and step > 0):
 
 
             			       print("Iter " + str(step) + " -- Training Minibatch: Loss= " + "{:.6f}".format(batch_loss) +
@@ -1367,18 +1816,18 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 				print("Saving model: " + outputPath+path)
 				saver.save(sess, outputPath+path)
 			
-	
-		print("Saving model: " + outputPath+path+'_final')
-		saver.save(sess, outputPath+path + '_final')				
-
+			
+		#print("Saving model: " + outputPath+path+'_final')
+		#saver.save(sess, outputPath+path + '_final')				
+		
 
 	print("Optimization Finished!")
 	
                 
 	tf.reset_default_graph()        
-        
+	        
 	return np.mean(trackLoss)
-
+	
                 
         
 def extractFeatures(patches, batchSize, weightDecay, cropSize, outputPath, countIter):
@@ -1632,18 +2081,33 @@ def validation(sess,countIter,resultFile,validationData,validationMask,mean_full
 	'''
 		
 
-def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full,useMinibatch, isFullTraining=False, isDataAugmentation=False):
+def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSize, batchSize, weightDecay, outputPath, iteration, mean_full, std_full,useMinibatch,useBalance, isFullTraining=False, isDataAugmentation=False):
 
-
+	params = str(blocks) + "_blocks_" + str(cropSize)
 	trainings = ""	
-	fully = 1024
-        model_path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully)
+
+        model_path = "models/" + str(instance) + "_model_6x3_" + params 
+
 
         for name in trainInstances:
                 model_path = model_path + "_" + name
 
+
 	if useMinibatch == 1:
 		model_path = model_path + "_minibatch"
+		params = params + "_minibatch"
+
+	if useBalance == 1:
+		model_path = model_path + "_balanced_reduced_majority"
+		params = params + "_balanced_reduced_majority"
+
+	if useBalance == 2:
+		model_path = model_path + "_balanced_equal"
+		params = params + "_balanced_equal"
+
+
+	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + params
+
 
 	print("Model path: " + model_path)
 	print("Number of images used to test: " + str(len(testInstances)))
@@ -1653,7 +2117,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 		
 
-	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + "/test/"
+	resultPath = resultPath + "/test/"
 	resultPath = outputPath + resultPath
 	if os.path.exists(resultPath) != True:
 		print("Creating folder: " + resultPath)
@@ -1676,7 +2140,6 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 	
 
-	start_time = time.time()
 	######################################## Network Parameters
 	n_input = cropSize*cropSize*3 # RGB
 	dropout = 0.5 # Dropout, probability to keep units
@@ -1708,19 +2171,19 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	
 	resultFile = resultPath + "/test-result.txt"
 	predictionPath = resultPath + "/prediction"
-	probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully)
+	probabilityPath = outputPath + "results/probability/fused/"  + str(instance) + "_probs_" + params + "_final"
 
 	if isFullTraining == False:
 		if countIter > 0:
 			model_path = model_path +'_iteration_'+str(countIter)
 			resultFile = resultPath + "/test-result"+'-iteration-'+str(countIter)+".txt"
 			predictionPath = resultPath + "/prediction"+'-iteration-'+str(countIter)
-			probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" + str(cropSize) + "_fully_" + str(fully) + '_iteration_'+str(countIter)
+			probabilityPath = outputPath + "results/probability/fused/"  + str(instance) + "_probs_" + params + '_iteration_'+str(countIter)
 	elif isFullTraining == True:
 		model_path = model_path +'_final'
 		resultFile = resultPath + "/test-result"+"-final.txt"
 		predictionPath = resultPath + "/prediction-final"
-		probabilityPath = outputPath + "results/probability/"  + str(instance) + "_probs_" + str(blocks) + "_blocks_" +  str(cropSize) + "_fully_" + str(fully) + "_final"
+		probabilityPath = outputPath + "results/probability/fused/"  + str(instance) + "_probs_" + params  + "_final"
 	
 
 	
@@ -1737,12 +2200,18 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	
 	result = open(resultFile,"w") 
 	
+	#if(cropSize == 57 and blocks == 6):
+	#	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=1.0)
+	#else:
+	gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.33)
+
+
 	with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
 
          	saver.restore(sess, model_path)
 
 		for testInstance in testInstances:
-
+			start_time = time.time()
                 	testData, testMask = loadImages(dataPath, [testInstance], cropSize,1)
 
 			classDistributionFile = outputPath + "/classDistribution/classe_" + tests + ".npy"
@@ -1799,7 +2268,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 			print("Creating prediction map for cropsize " + str(cropSize) + " and instance " + str(instance))
 			createPredictionMap(predictionPath + "_" + testInstance + ".png", mapImage, testInstance)
 			
-			print("Saving probability for cropsize " + str(cropSize) + " and instance " + str(instance))
+			print("Saving probability for cropsize " + str(cropSize) + " and instance " + str(instance) + ": " + probabilityPath + "_" + testInstance + ".npy")
 			np.save(probabilityPath + "_" + testInstance + ".npy",probs)
 		
 			_sum = 0.0
@@ -1836,7 +2305,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 def main():
 
 
-	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'trainInstances','validationInstances', 'testInstances', 'cropSize','learningRate', 'weightDecay', 'batchSize', 'nIter','epochs','trainModel','instance','useMinibatch','useValidation','blocks']
+	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'trainInstances','validationInstances', 'testInstances', 'cropSize','learningRate', 'weightDecay', 'batchSize', 'nIter','epochs','trainModel','instance','useMinibatch','useValidation','blocks','use_balance','gpu_use']
 
 
 
@@ -1899,9 +2368,14 @@ def main():
 	index = index + 1
 	useValidation = int(sys.argv[index])
 
-	
 	index = index + 1
 	blocks = int(sys.argv[index])
+
+	index = index + 1
+	useBalance = int(sys.argv[index])
+	
+	index = index + 1
+	gpuUse = float(sys.argv[index])
 
 
 
@@ -1937,10 +2411,28 @@ def main():
 
 	if(train_model == 1):
 
+		classDistributionFile = outputPath + "/classDistribution/classe_" + trainings
+		purityFile = outputPath + "/classDistribution/purity_" + trainings 
+
+
 		if useMinibatch == 1:
 			print("Using minibatch balance")
 		else:
 			print("Not using minibatch balance")
+
+		if useBalance == 1:
+			print("Using dataset balance: reducing majority class")
+  			classDistributionFile = classDistributionFile + "_balanced_reduced_majority"
+			purityFile = purityFile + "_balanced_reduced_majority" 
+		elif useBalance == 2:
+			print("Using dataset balance: equaling classes")
+  			classDistributionFile = classDistributionFile + "_balanced_equal"
+			purityFile = purityFile + "_balanced_equal" 
+		else:
+			print("Not using balance")
+
+
+
 
 		if useValidation == 1:
 
@@ -1965,29 +2457,32 @@ def main():
 			validationMask = []
 			classesValidation = []
 
-
+		classDistributionFile = classDistributionFile + ".npy"
+		purityFile = purityFile + ".npy"
 			
-		classDistributionFile = outputPath + "/classDistribution/classe_" + trainings + ".npy"
-		purityFile = outputPath + "/classDistribution/purity_" + trainings + ".npy"
 				
 	        if os.path.exists(classDistributionFile) != True or os.path.exists(purityFile) != True:
+			print("Creating training class distribution and purity index")
 	        	classes,purity = createDistributionsOverClasses(trainMask, cropSize, isPurityNeeded=False, limitProcess=False, isDebug=True)
+			print("Saving class distribution")
 			np.save(classDistributionFile,classes)
+			print("Saving purity distribution")
 			np.save(purityFile,purity)
 
 		else:
 			print("Loading training class distribution and purity index")
+			print(classDistributionFile)
 			classes = np.load(classDistributionFile)
 			purity = np.load(purityFile)
 
 
-        	train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useValidation,keepTraining=True,isFullTraining=True)
+        	train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validationData,validationMask,classes,purity,classesValidation,mean_full,std_full,lr_initial,batchSize,weightDecay,50000,cropSize,outputPath,display_step,val_inteval,epochs,countIter,useMinibatch,useBalance,useValidation,gpuUse,keepTraining=True,isFullTraining=True)
 	else:
 		mean_full = np.load(mean_file)
 		std_full = np.load(std_file)
 		
 	print("FULL TEST...")
-	test(blocks,instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch, isFullTraining=True)
+	test(blocks,instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch,useBalance, isFullTraining=True)
 	print("...Done!")
 	
 

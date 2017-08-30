@@ -55,18 +55,18 @@ def read_image_P2_int16(filename):
 
 #x,y,prob-class0,prob-class1
 def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
-	print("Generate fusion")
+	#print("Generate fusion")
 	imageCont = 0
 	
 	tam= int(math.sqrt(data[0].shape[0]))
 	resultPath = outputPath + str(instance) + "_instance/"
 
 	if os.path.exists(resultPath) != True:
-		print("Creating folder: " + resultPath)
+		#print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
 
 	
-	print("Opening file")
+	#print("Opening file")
 	result = open(resultPath + "result.txt",'a')
 
 	
@@ -101,10 +101,10 @@ def generateFusion(groundPath,outputPath,instance,fusionInstances,data,crops):
 				acc += 1
 
 		cur_kappa = cohen_kappa_score(grounds, predicts)
-		print("Kappa " + str(cur_kappa) + " Acc " + str(acc/len(grounds)*100) )
+		print(str(acc/len(grounds)) + ";" + str(cur_kappa))
 		result.write(str(instance) + "_" + fusionInstances[imageCont] + ": Kappa: " + str(cur_kappa) + " Acc: " + str(acc/len(grounds)*100) + "\n")
-		fusionFile =  resultPath + str(instance) + "_fusion_" + fusionInstances[imageCont] + ".png"
-		print("Saving image '" + fusionFile + "'")
+		fusionFile =  resultPath + str(instance) + "_fusion_all_" + fusionInstances[imageCont] + ".png"
+		#print("Saving image '" + fusionFile + "'")
 		scipy.misc.imsave(fusionFile , fusion_map)
 
 		imageCont += 1
@@ -155,19 +155,41 @@ def main():
 
 	probsData = []
 	
-
+	arc3 = [17,25,33,41]
+	arc4 = [33,41,49]
+	arc5 = [49,57]
+	arc6 = [57]
+	probs = 0
 	for i in fusionInstances:
 		for cropSize in cropSizes: 
 		
 			#if(cropSize == str(25)):
 			#	probFile = dataPath + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 
 			#else:
-			probFile = dataPath + "fused/" + str(instance) + "_probs_" + str(cropSize) + "_final_" + i + ".npy" 			
-			print("Loading file: " + probFile)
-			probsData.append(np.load(probFile))
+			if int(cropSize) in arc3:
+				probFile = dataPath + "fused/" + str(instance) + "_probs_3_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
+				#print("Loading file: " + probFile)
+				probsData.append(np.load(probFile))
+				probs += 1
+			if int(cropSize) in arc4:
+				probFile = dataPath + "fused/" + str(instance) + "_probs_4_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
+				#print("Loading file: " + probFile)
+				probsData.append(np.load(probFile))
+				probs += 1
+			if int(cropSize) in arc5:
+				probFile = dataPath + "fused/" + str(instance) + "_probs_5_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
+				#print("Loading file: " + probFile)
+				probsData.append(np.load(probFile))
+				probs += 1
+			if int(cropSize) in arc6:
+				probFile = dataPath + "fused/" + str(instance) + "_probs_6_blocks_" + str(cropSize) + "_final_" + i + ".npy" 			
+				#print("Loading file: " + probFile)
+				probsData.append(np.load(probFile))
+				probs += 1
 
-	generateFusion(groundPath,outputPath,instance,fusionInstances,probsData,3)
-
+	probs = (probs/len(fusionInstances))
+	generateFusion(groundPath,outputPath,instance,fusionInstances,probsData,probs)
+	
 
 
 if __name__ == "__main__":
