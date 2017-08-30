@@ -140,8 +140,9 @@ def plotNNFilter(units,layer_number,label):
 		#plt.savefig(separeted_path,dpi = 50)
 		#plt.close()
 
-	for i in range(25):
+	for i in range(1):
 		separeted_path = "/media/tensorflow/coffee/output/filters/weights_layer_" + str(layer_number) + "_label_" + str(label) + "_number_" + str(i) + ".png"
+		print(units[0,:,:,i])
 		scipy.misc.imsave(separeted_path, units[0,:,:,i])
 		#plt.savefig(separeted_path,dpi = 50)
 		#plt.close()
