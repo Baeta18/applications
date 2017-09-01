@@ -549,14 +549,14 @@ def convNet_ICPR_9(x, dropout, is_training, cropSize, weightDecay):
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
 	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
+	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='SAME')
 	print("Conv")
 	print(conv1.get_shape())
 	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
 	print("pool")
 	print(pool1.get_shape())
 
-	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
+	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='SAME')
 	print("Conv")
 	print(conv2.get_shape())
 	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')

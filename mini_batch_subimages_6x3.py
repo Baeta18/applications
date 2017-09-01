@@ -566,8 +566,8 @@ def convNet_ICPR_9(x, dropout, is_training, cropSize, weightDecay):
 
 
 	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool2, [-1, 1*1*128])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*128, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
+		reshape = tf.reshape(pool2, [-1, 2*2*128])
+		weights = _variable_with_weight_decay('weights', shape=[2*2*128, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
 		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
 		drop_fc1 = tf.nn.dropout(reshape, dropout)
 		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
