@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#dataPath, outputPath(for model, images, etc), trainInstances, validationInstances,testInstances,cropSize,learningRate,weightDecay,batchSize,nIter,epochs,trainModel,instance,useMinibatch,useValidation,blocks,useBalance,gpuUse
+#dataPath, outputPath(for model, images, etc), trainInstances, validationInstances,testInsstances,cropSize,learningRate,weightDecay,batchSize,nIter,epochs,trainModel,instance,useMinibatch,useValidation,blocks,useBalance,gpuUse
 #ate 2 no 41
 
 #1
