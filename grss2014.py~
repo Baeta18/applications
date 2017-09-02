@@ -2504,7 +2504,7 @@ def main():
 		
 	mean_file = outputPath + "/mean_std/" + "mean_full.npy"
 	std_file = outputPath + "/mean_std/" + "std_full.npy"	
-
+	'''
 	if os.path.isfile(mean_file) != True or os.path.isfile(std_file) != True:
 		trainData,trainMask,means,stds = loadImages(dataPath,trainInstances, cropSize,0)
 		mean_full = np.asarray([0,0,0])
@@ -2582,7 +2582,7 @@ def main():
 	print("FULL TEST...")
 	test(blocks,instance,dataPath,trainInstances, testInstances,countIter,cropSize, batchSize, weightDecay, outputPath, 'full', mean_full, std_full,useMinibatch,useBalance, isFullTraining=True)
 	print("...Done!")
-	
+	'''
 
 if __name__ == "__main__":
     main()

@@ -2435,7 +2435,8 @@ def main():
 	listParams = ['dataPath', 'outputPath(for model, images, etc)', 'trainInstance','validationInstance', 'testInstance', 'cropSize','learningRate', 'weightDecay', 'batchSize', 'nIter','epochs','trainModel','useValidation','blocks','gpu_use']
 
 
-
+	print(len(sys.argv))
+	print(len(listParams)+1)
 
 	if len(sys.argv) < len(listParams)+1:
 		sys.exit('Usage: ' + sys.argv[0] + ' ' + ' '.join(listParams))
