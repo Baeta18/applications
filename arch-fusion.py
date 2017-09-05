@@ -544,99 +544,7 @@ def _conv_layer(input, kernelShape, name, weightDecay, is_training, pad='SAME', 
 		return conv_act
 
 
-def convNet_ICPR_9(x, dropout, is_training, cropSize, weightDecay):
-	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
-	#print x.get_shape()
 	
-	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
-	print("Conv")
-	print(conv1.get_shape())
-	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	print("pool")
-	print(pool1.get_shape())
-
-	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
-	print("Conv")
-	print(conv2.get_shape())
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	print("pool")
-	print(pool2.get_shape())
-
-
-
-	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool2, [-1, 2*2*192])
-		weights = _variable_with_weight_decay('weights', shape=[2*2*192, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
-	
-	# Fully connected layer 2
-	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96,96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-
-		# Apply Dropout
-		drop_fc2 = tf.nn.dropout(fc1, dropout)
-		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
-
-	# Output, class prediction
-	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
-		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
-
-	return fc2, logits
-
-	
-def convNet_ICPR_11(x, dropout, is_training, cropSize, weightDecay):
-	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
-	#print x.get_shape()
-	
-	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
-	print("Conv")
-	print(conv1.get_shape())
-	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	print("pool")
-	print(pool1.get_shape())
-
-	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
-	print("Conv")
-	print(conv2.get_shape())
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	print("pool")
-	print(pool2.get_shape())
-
-
-
-	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool2, [-1, 1*1*128])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*128, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
-		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
-	
-	# Fully connected layer 2
-	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
-
-		# Apply Dropout
-		drop_fc2 = tf.nn.dropout(fc1, dropout)
-		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
-
-	# Output, class prediction
-	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
-		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
-
-	return fc2, logits
-
-
-
 def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 	# Reshape input picture
 	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
@@ -689,63 +597,6 @@ def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
 		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
 
 	return fc2, logits
-
-'''
-	
-def convNet_ICPR_17(x, dropout, is_training, cropSize, weightDecay):
-	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
-	#print x.get_shape()
-	
-	conv1 = _conv_layer(x, [3,3,3,64], 'ft_conv1', weightDecay, is_training, pad='VALID')
-	print("Conv")
-	print(conv1.get_shape())
-	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	print("pool")
-	print(pool1.get_shape())
-
-	conv2 = _conv_layer(pool1, [3,3,64,128], 'ft_conv2', weightDecay, is_training, pad='VALID')
-	print("Conv")
-	print(conv2.get_shape())
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
-	print("pool")
-	print(pool2.get_shape())
-
-	conv3 = _conv_layer(pool2, [3,3,128,256], 'ft_conv3', weightDecay, is_training, pad='VALID')
-	print("Conv")
-	print(conv3.get_shape())
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 1, 1, 1], name='ft_pool2', pad='VALID')
-	print("pool")
-	print(pool3.get_shape())
-
-
-	
-
-	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool3, [-1, 1*1*256])
-		weights = _variable_with_weight_decay('weights', shape=[1*1*256, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
-		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
-	
-	# Fully connected layer 2
-	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[1024, 1024], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [1024], tf.constant_initializer(0.1))
-
-		# Apply Dropout
-		drop_fc2 = tf.nn.dropout(fc1, dropout)
-		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
-
-	# Output, class prediction
-	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [1024, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
-		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
-
-	return fc2, logits
-
-'''
 
 
 def convNet_ICPR_33_3blocks(x, dropout, is_training, cropSize, weightDecay):
@@ -1005,17 +856,6 @@ def convNet_ICPR_41_3blocks(x, dropout, is_training, cropSize, weightDecay):
 	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
 	print("pool shape")	
 	print(pool3.get_shape())
-
-	'''
-	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='VALID')
-	print("conv shape")
-	print(conv4.get_shape())
-
-
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], stride=[1, 1, 1, 1], name='ft_pool4', pad='VALID')
-	print("pool shape")	
-	print(pool4.get_shape())
-	'''
 
 	with tf.variable_scope('ft_fc1') as scope:
 		reshape = tf.reshape(pool3, [-1, 1*1*256])
@@ -1500,82 +1340,6 @@ def convNet_ICPR_57_5blocks(x, dropout, is_training, cropSize, weightDecay):
 	return fc2, logits
 
 
-def convNet_ICPR_65_5blocks(x, dropout, is_training, cropSize, weightDecay):
-	# Reshape input picture
-	x = tf.reshape(x, shape=[-1, cropSize, cropSize, 3]) ## default: 25x25
-	#print x.get_shape()
-	
-	conv1 = _conv_layer(x, [3,3,3,128], 'ft_conv1', weightDecay, is_training, pad='SAME')
-	print("conv shape")
-	print(conv1.get_shape())
-
-	pool1 = _max_pool(conv1, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool1', pad='VALID')
-	print("pool shape")	
-	print(pool1.get_shape())
-
-	conv2 = _conv_layer(pool1, [3,3,128,192], 'ft_conv2', weightDecay, is_training, pad='SAME')
-	print("conv shape")
-	print(conv2.get_shape())
-
-	pool2 = _max_pool(conv2, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool2', pad='VALID')
-	print("pool shape")
-	print(pool2.get_shape())
-	
-	
-	conv3 = _conv_layer(pool2, [3,3,192,256], 'ft_conv3', weightDecay, is_training, pad='SAME')
-	print("conv shape")
-	print(conv3.get_shape())
-
-
-	pool3 = _max_pool(conv3, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool3', pad='VALID')
-	print("pool shape")	
-	print(pool3.get_shape())
-
-
-	conv4 = _conv_layer(pool3, [3,3,256,312], 'ft_conv4', weightDecay, is_training, pad='SAME')
-	print("conv shape")
-	print(conv4.get_shape())
-
-
-	pool4 = _max_pool(conv4, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool4', pad='VALID')
-	print("pool shape")
-	print(pool4.get_shape())
-
-	conv5 = _conv_layer(pool4, [3,3,312,376], 'ft_conv5', weightDecay, is_training, pad='SAME')
-	print("conv shape")
-	print(conv5.get_shape())
-
-
-	pool5 = _max_pool(conv5, kernel=[1, 2, 2, 1], strides=[1, 2, 2, 1], name='ft_pool5', pad='VALID')
-	print("pool shape")
-	print(pool5.get_shape())
-
-
-
-	with tf.variable_scope('ft_fc1') as scope:
-		reshape = tf.reshape(pool5, [-1, 2*2*376])
-		weights = _variable_with_weight_decay('weights', shape=[2*2*376, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-		drop_fc1 = tf.nn.dropout(reshape, dropout)
-		fc1 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc1, weights), biases), is_training, scope=scope.name))
-	
-	# Fully connected layer 2
-	with tf.variable_scope('ft_fc2') as scope:
-		weights = _variable_with_weight_decay('weights', shape=[96, 96], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [96], tf.constant_initializer(0.1))
-
-		# Apply Dropout
-		drop_fc2 = tf.nn.dropout(fc1, dropout)
-		fc2 = tf.nn.relu(_batch_norm(tf.add(tf.matmul(drop_fc2, weights), biases), is_training, scope=scope.name))
-
-	# Output, class prediction
-	with tf.variable_scope('ft_fc3_logits') as scope:
-		weights = _variable_with_weight_decay('weights', [96, NUM_CLASSES], ini=tf.contrib.layers.xavier_initializer(dtype=tf.float32), wd=weightDecay)
-		biases = _variable_on_cpu('biases', [NUM_CLASSES], tf.constant_initializer(0.1))
-		logits = tf.add(tf.matmul(fc2, weights), biases, name=scope.name)
-
-	return fc2, logits
-
 
 def loss_def(logits, labels):
 	# Calculate the average cross entropy loss across the batch.
@@ -1591,9 +1355,7 @@ def loss_def(logits, labels):
 def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 
 	print("Cropsize " + str(cropSize))
-	if(cropSize == 11):
-		 _,logits = convNet_ICPR_11(x, keep_prob, is_training, cropSize, weightDecay)
-	elif(cropSize == 17):
+	if(cropSize == 17):
 		 _,logits = convNet_ICPR_17(x, keep_prob, is_training, cropSize, weightDecay)
 	elif(cropSize == 33):
 		if blocks == 3:
@@ -1622,14 +1384,6 @@ def convNet_ICPR(x, keep_prob, is_training, cropSize, weightDecay,blocks):
 		else:
 			_,logits = convNet_ICPR_57_5blocks(x, keep_prob, is_training, cropSize, weightDecay)
 
-	elif(cropSize == 65):
-		if blocks == 5:
-		 	_,logits = convNet_ICPR_65_5blocks(x, keep_prob, is_training, cropSize, weightDecay)
-
-	elif(cropSize == 9):
-		 _,logits = convNet_ICPR_9(x, keep_prob, is_training, cropSize, weightDecay)
-
-	
 	return _,logits
 
 def drawGraphic(valuesFile,graphicFile):
@@ -1984,7 +1738,7 @@ def extractFeatures(patches, batchSize, weightDecay, cropSize, outputPath, count
 			#saver_restore.restore(sess, outputPath+'fullTraining_modelDA_final')
 			saver_restore.restore(sess, outputPath+'fullTraining_model_final')
 			print('... Done!')
-python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+
 		# Keep training until reach max iterations
 		for i in xrange(0,(len(patches)/batchSize)):
 			bx = np.reshape(patches[i*batchSize:min(i*batchSize+batchSize, len(patches))], (-1, n_input))
@@ -2039,7 +1793,7 @@ def extractFeaturesFromClassDistribution(data, classDistribution, batchSize, wei
 	
 	# Launch the graph
 	count = 0
-	with tf.Session() as sess:python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+	with tf.Session() as sess:
 		if countIter >= 1:
 			print('Restoring Model from ' + outputPath+'model_final_'+str(countIter) + '...')
 			saver_restore.restore(sess, outputPath+'model_final_'+str(countIter))
@@ -2255,7 +2009,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 
 	if os.path.exists(resultPath) != True:
-		print("Creating folder: " + resultPath)python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+		print("Creating folder: " + resultPath)
                 os.makedirs(resultPath)
 
 
@@ -2283,7 +2037,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	correct = tf.nn.in_top_k(logits, y, 1)
 	# Return the number of true entries
 	acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
-	pred = tf.argmax(logits, 1)python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+	pred = tf.argmax(logits, 1)
 	soft = tf.nn.softmax(logits)
 	#correct_pred = tf.equal(pred, tf.argmax(y, 1))
 	#accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
@@ -2363,7 +2117,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 			shuffle = np.arange(len(classeDistribution[0]) + len(classeDistribution[1]))
 
          	        epoch = int(len(shuffle)/batchSize)
-			classes = []python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+			classes = []
 			all_predcs = []
 			probs = []
 			cm_test = np.zeros((NUM_CLASSES,NUM_CLASSES), dtype=np.uint32)
@@ -2421,7 +2175,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 	
 '''
-python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
+        python cnn_knn_dynamic_jefersson.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 7_5,8_6,8_7 7_7,7_8,8_5 7_6,8_6,9_5 25 500 0.01 0.005 200 100
 
 '''
 def main():

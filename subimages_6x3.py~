@@ -1818,16 +1818,18 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
                 for e in range(countIter,epochs):
                         
                         print("Epoch: " + str(e+1) + " / " + str(epochs))
+
+			#useBalance == 1 -> majority e minority de mesmo tamanho
+			if useBalance == 1:
+				majorityShuffle = np.asarray(random.sample(xrange(len(majority)), (len(majority))))
+				minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+				shuffleSize = len(majorityShuffle)
+				epoch = int(shuffleSize/batchSize*2)
                  
-
-
-			if useBalance == 2:
+			#useBalance == 2 -> majority e minority de tamanhos diferentes
+			elif useBalance == 2:
 				
-				#shuffleClass0 = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
-				#shuffleClass1 = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
-
-				#majorityShuffle = shuffleClass0
-				#minorityShuffle = shuffleClass1
+				
 
 				if len(classes[0]) < len(classes[1]):
 					majority_length = len(classes[1])
@@ -1846,14 +1848,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 				step1 = 0
 				shuffleSize = majority_length
 				epoch = int(shuffleSize/batchSize*2)
-			
-			elif useBalance == 1:
-				majorityShuffle = np.asarray(random.sample(xrange(len(majority)), (len(majority))))
-				minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
-				#usado quando o minority tem de ser repetido ate completar o majority step1 = 0
-				shuffleSize = len(majorityShuffle)
-				epoch = int(shuffleSize/batchSize*2)
-
+	
 			else:
 				shuffle = np.asarray(random.sample(xrange(len(classes[0]) + len(classes[1])), (len(classes[0]) + len(classes[1]))))
 				shuffleSize = len(shuffle)
