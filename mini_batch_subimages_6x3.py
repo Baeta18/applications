@@ -1818,16 +1818,18 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
                 for e in range(countIter,epochs):
                         
                         print("Epoch: " + str(e+1) + " / " + str(epochs))
+
+			#useBalance == 1 -> majority e minority de mesmo tamanho
+			if useBalance == 1:
+				majorityShuffle = np.asarray(random.sample(xrange(len(majority)), (len(majority))))
+				minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
+				shuffleSize = len(majorityShuffle)
+				epoch = int(shuffleSize/batchSize*2)
                  
-
-
-			if useBalance == 2:
+			#useBalance == 2 -> majority e minority de tamanhos diferentes
+			elif useBalance == 2:
 				
-				#shuffleClass0 = np.asarray(random.sample(xrange(len(classes[0])), (len(classes[0]))))
-				#shuffleClass1 = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
-
-				#majorityShuffle = shuffleClass0
-				#minorityShuffle = shuffleClass1
+				
 
 				if len(classes[0]) < len(classes[1]):
 					majority_length = len(classes[1])
@@ -1846,14 +1848,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 				step1 = 0
 				shuffleSize = majority_length
 				epoch = int(shuffleSize/batchSize*2)
-			
-			elif useBalance == 1:
-				majorityShuffle = np.asarray(random.sample(xrange(len(majority)), (len(majority))))
-				minorityShuffle = np.asarray(random.sample(xrange(len(classes[1])), (len(classes[1]))))
-				#usado quando o minority tem de ser repetido ate completar o majority step1 = 0
-				shuffleSize = len(majorityShuffle)
-				epoch = int(shuffleSize/batchSize*2)
-
+	
 			else:
 				shuffle = np.asarray(random.sample(xrange(len(classes[0]) + len(classes[1])), (len(classes[0]) + len(classes[1]))))
 				shuffleSize = len(shuffle)
@@ -1989,7 +1984,7 @@ def extractFeatures(patches, batchSize, weightDecay, cropSize, outputPath, count
 			#saver_restore.restore(sess, outputPath+'fullTraining_modelDA_final')
 			saver_restore.restore(sess, outputPath+'fullTraining_model_final')
 			print('... Done!')
-
+python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 		# Keep training until reach max iterations
 		for i in xrange(0,(len(patches)/batchSize)):
 			bx = np.reshape(patches[i*batchSize:min(i*batchSize+batchSize, len(patches))], (-1, n_input))
@@ -2044,7 +2039,7 @@ def extractFeaturesFromClassDistribution(data, classDistribution, batchSize, wei
 	
 	# Launch the graph
 	count = 0
-	with tf.Session() as sess:
+	with tf.Session() as sess:python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 		if countIter >= 1:
 			print('Restoring Model from ' + outputPath+'model_final_'+str(countIter) + '...')
 			saver_restore.restore(sess, outputPath+'model_final_'+str(countIter))
@@ -2260,7 +2255,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 
 	if os.path.exists(resultPath) != True:
-		print("Creating folder: " + resultPath)
+		print("Creating folder: " + resultPath)python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
                 os.makedirs(resultPath)
 
 
@@ -2288,7 +2283,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	correct = tf.nn.in_top_k(logits, y, 1)
 	# Return the number of true entries
 	acc_mean = tf.reduce_sum(tf.cast(correct, tf.int32))
-	pred = tf.argmax(logits, 1)
+	pred = tf.argmax(logits, 1)python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 	soft = tf.nn.softmax(logits)
 	#correct_pred = tf.equal(pred, tf.argmax(y, 1))
 	#accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
@@ -2368,7 +2363,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 			shuffle = np.arange(len(classeDistribution[0]) + len(classeDistribution[1]))
 
          	        epoch = int(len(shuffle)/batchSize)
-			classes = []
+			classes = []python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 			all_predcs = []
 			probs = []
 			cm_test = np.zeros((NUM_CLASSES,NUM_CLASSES), dtype=np.uint32)
@@ -2426,7 +2421,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 	
 '''
-        python cnn_knn_dynamic_jefersson.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 7_5,8_6,8_7 7_7,7_8,8_5 7_6,8_6,9_5 25 500 0.01 0.005 200 100
+python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 
 '''
 def main():
