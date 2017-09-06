@@ -1672,7 +1672,7 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 	#keiller repara o path e o model_path eu nao deixei o modelo treinado salvar na pasta do model_path para nao sobrescrevelos
 	#os modelos treinados vao se encontrar um nivel abaixo
 
-	#model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" str(instance) + "_model_6x3_" + params 
+	#model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" + str(instance) + "_model_6x3_" + params 
         path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) 
 	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize)
 	
@@ -2212,7 +2212,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	params = str(blocks) + "_blocks_" + str(cropSize)
 	trainings = ""	
 
-        model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" str(instance) + "_model_6x3_" + params 
+        model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" + str(instance) + "_model_6x3_" + params 
 
 
         for name in trainInstances:
