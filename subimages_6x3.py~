@@ -2208,7 +2208,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 	params = str(blocks) + "_blocks_" + str(cropSize)
 	trainings = ""	
 
-        model_path = "models/" + str(instance) + "_model_6x3_" + params 
+        model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" str(instance) + "_model_6x3_" + params 
 
 
         for name in trainInstances:
@@ -2421,7 +2421,7 @@ def test(blocks,instance,dataPath,trainInstances,testInstances,countIter, cropSi
 
 	
 '''
-        python cnn_knn_dynamic_jefersson.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 7_5,8_6,8_7 7_7,7_8,8_5 7_6,8_6,9_5 25 500 0.01 0.005 200 100
+python /media/tensorflow/coffee/applications/subimages_6x3.py /media/tensorflow/coffee/dataset/ /media/tensorflow/coffee/output/ 8_7,9_7,7_7,9_6,8_6,8_5 7_7 7_6,7_5,9_5 65 0.001 0.005 100 0 10 1 2 0 0 5 0 1
 
 '''
 def main():
