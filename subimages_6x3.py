@@ -1673,9 +1673,9 @@ def train(blocks,instance,dataPath,trainInstances,trainData,trainMask,validation
 	#os modelos treinados vao se encontrar um nivel abaixo
 
 	#model_path = "models/" + str(cropSize) + "/" + str(blocks) + "_blocks/" + str(instance) + "_model_6x3_" + params 
-        path = "models/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) 
+        path = "models/" +  str(cropSize) + "/" + str(blocks) + "_blocks/" + str(instance) + "_model_6x3_" + str(blocks) + "_blocks_" +  str(cropSize) 
 	resultPath = "results/maps/" + str(instance) + "_maps_6x3_" + str(blocks) + "_blocks_" + str(cropSize)
-	
+
 	print("Number of images used to train: " + str(len(trainInstances)))
 	print("Iteration: " + str(countIter))
 	print("Epochs: " + str(epochs))
